@@ -393,7 +393,8 @@ export class EdgeCalculator {
                     this._coefficients.stepMotion * motionDifference / this._settings.stepMaxDrift +
                     this._coefficients.stepRotation * potential.rotation / this._settings.stepMaxDirectionChange +
                     this._coefficients.stepSequencePenalty * (potential.sameSequence ? 0 : 1) +
-                    this._coefficients.stepMergeCCPenalty * (potential.sameMergeCC ? 0 : 1);
+                    this._coefficients.stepMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
+                    this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
 
                 if (score < lowestScore) {
                     lowestScore = score;
@@ -489,7 +490,8 @@ export class EdgeCalculator {
                         this._settings.turnMaxDistance +
                         this._coefficients.turnMotion * motionDifference / Math.PI +
                         this._coefficients.turnSequencePenalty * (potential.sameSequence ? 0 : 1) +
-                        this._coefficients.turnMergeCCPenalty * (potential.sameMergeCC ? 0 : 1);
+                        this._coefficients.turnMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
+                        this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
                 }
 
                 if (score < lowestScore) {
@@ -545,7 +547,8 @@ export class EdgeCalculator {
                 Math.abs(potential.distance - this._settings.panoPreferredDistance) /
                 this._settings.panoMaxDistance +
                 this._coefficients.panoMotion * Math.abs(potential.motionChange) / Math.PI +
-                this._coefficients.panoMergeCCPenalty * (potential.sameMergeCC ? 0 : 1);
+                this._coefficients.panoMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
+                this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
 
             if (score < lowestScore) {
                 lowestScore = score;
@@ -670,7 +673,8 @@ export class EdgeCalculator {
                     this._settings.panoMaxDistance +
                     this._coefficients.panoMotion * Math.abs(motionDifference) / maxRotationDifference +
                     this._coefficients.panoSequencePenalty * (potential.sameSequence ? 0 : 1) +
-                    this._coefficients.panoMergeCCPenalty * (potential.sameMergeCC ? 0 : 1);
+                    this._coefficients.panoMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
+                    this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
 
                 if (score < lowestScore) {
                     lowestScore = score;
@@ -747,7 +751,8 @@ export class EdgeCalculator {
                         Math.abs(potential[1].distance - this._settings.panoPreferredDistance) /
                         this._settings.panoMaxDistance +
                         this._coefficients.panoMotion * Math.abs(motionChange) / maxRotationDifference +
-                        this._coefficients.panoMergeCCPenalty * (potential[1].sameMergeCC ? 0 : 1);
+                        this._coefficients.panoMergeCCPenalty * (potential[1].sameMergeCC ? 0 : 1) +
+                        this._coefficients.timeSpan * Math.abs(potential[1].capturedAt - node.capturedAt);
 
                     if (score < lowestScore) {
                         lowestScore = score;

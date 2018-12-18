@@ -18,6 +18,8 @@ export class EdgeCalculatorCoefficients {
     public turnSequencePenalty: number;
     public turnMergeCCPenalty: number;
 
+    public timeSpan: number;
+
     constructor() {
         this.panoPreferredDistance = 2;
         this.panoMotion = 2;
@@ -37,6 +39,8 @@ export class EdgeCalculatorCoefficients {
         this.turnMotion = 2;
         this.turnSequencePenalty = 1;
         this.turnMergeCCPenalty = 4;
+
+        this.timeSpan = 1 / (1000 * 3600 * 24 * 30);
     }
 }
 
