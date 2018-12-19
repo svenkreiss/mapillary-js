@@ -33,6 +33,8 @@ export class EdgeCalculator {
     private _directions: EdgeCalculatorDirections;
     private _coefficients: EdgeCalculatorCoefficients;
 
+    private _timeScale: number;
+
     /**
      * Create a new edge calculator instance.
      *
@@ -51,6 +53,8 @@ export class EdgeCalculator {
         this._settings = settings != null ? settings : new EdgeCalculatorSettings();
         this._directions = directions != null ? directions : new EdgeCalculatorDirections();
         this._coefficients = coefficients != null ? coefficients : new EdgeCalculatorCoefficients();
+
+        this._timeScale = 1 / (1000 * 3600 * 24 * 30);
     }
 
     /**
@@ -386,6 +390,9 @@ export class EdgeCalculator {
                     motionDifference * motionDifference +
                     potential.verticalMotion * potential.verticalMotion);
 
+                const timeSpan: number = this._transformTimeSpan(
+                    potential.capturedAt, node.capturedAt, this._timeScale);
+
                 let score: number =
                     this._coefficients.stepPreferredDistance *
                     Math.abs(potential.distance - this._settings.stepPreferredDistance) /
@@ -394,7 +401,7 @@ export class EdgeCalculator {
                     this._coefficients.stepRotation * potential.rotation / this._settings.stepMaxDirectionChange +
                     this._coefficients.stepSequencePenalty * (potential.sameSequence ? 0 : 1) +
                     this._coefficients.stepMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
-                    this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
+                    this._coefficients.timeSpan * timeSpan;
 
                 if (score < lowestScore) {
                     lowestScore = score;
@@ -485,13 +492,16 @@ export class EdgeCalculator {
                         motionDifference * motionDifference +
                         potential.verticalMotion * potential.verticalMotion);
 
+                    const timeSpan: number = this._transformTimeSpan(
+                        potential.capturedAt, node.capturedAt, this._timeScale);
+
                     score =
                         this._coefficients.turnDistance * potential.distance /
                         this._settings.turnMaxDistance +
                         this._coefficients.turnMotion * motionDifference / Math.PI +
                         this._coefficients.turnSequencePenalty * (potential.sameSequence ? 0 : 1) +
                         this._coefficients.turnMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
-                        this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
+                        this._coefficients.timeSpan * timeSpan;
                 }
 
                 if (score < lowestScore) {
@@ -542,13 +552,16 @@ export class EdgeCalculator {
                 continue;
             }
 
+            const timeSpan: number = this._transformTimeSpan(
+                potential.capturedAt, node.capturedAt, this._timeScale);
+
             let score: number =
                 this._coefficients.panoPreferredDistance *
                 Math.abs(potential.distance - this._settings.panoPreferredDistance) /
                 this._settings.panoMaxDistance +
                 this._coefficients.panoMotion * Math.abs(potential.motionChange) / Math.PI +
                 this._coefficients.panoMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
-                this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
+                this._coefficients.timeSpan * timeSpan;
 
             if (score < lowestScore) {
                 lowestScore = score;
@@ -667,6 +680,9 @@ export class EdgeCalculator {
                     continue;
                 }
 
+                const timeSpan: number = this._transformTimeSpan(
+                    potential.capturedAt, node.capturedAt, this._timeScale);
+
                 let score: number =
                     this._coefficients.panoPreferredDistance *
                     Math.abs(potential.distance - this._settings.panoPreferredDistance) /
@@ -674,7 +690,7 @@ export class EdgeCalculator {
                     this._coefficients.panoMotion * Math.abs(motionDifference) / maxRotationDifference +
                     this._coefficients.panoSequencePenalty * (potential.sameSequence ? 0 : 1) +
                     this._coefficients.panoMergeCCPenalty * (potential.sameMergeCC ? 0 : 1) +
-                    this._coefficients.timeSpan * Math.abs(potential.capturedAt - node.capturedAt);
+                    this._coefficients.timeSpan * timeSpan;
 
                 if (score < lowestScore) {
                     lowestScore = score;
@@ -747,12 +763,15 @@ export class EdgeCalculator {
                         continue;
                     }
 
+                    const timeSpan: number = this._transformTimeSpan(
+                        potential[1].capturedAt, node.capturedAt, this._timeScale);
+
                     let score: number = this._coefficients.panoPreferredDistance *
                         Math.abs(potential[1].distance - this._settings.panoPreferredDistance) /
                         this._settings.panoMaxDistance +
                         this._coefficients.panoMotion * Math.abs(motionChange) / maxRotationDifference +
                         this._coefficients.panoMergeCCPenalty * (potential[1].sameMergeCC ? 0 : 1) +
-                        this._coefficients.timeSpan * Math.abs(potential[1].capturedAt - node.capturedAt);
+                        this._coefficients.timeSpan * timeSpan;
 
                     if (score < lowestScore) {
                         lowestScore = score;
@@ -779,6 +798,14 @@ export class EdgeCalculator {
         }
 
         return panoEdges;
+    }
+
+    private _transformTimeSpan(t1: number, t2: number, scale: number): number {
+        let scaled: number = scale * Math.abs(t2 - t1);
+
+        return scaled < 6 ?
+            scaled / 3 :
+            Math.min(9, scaled - 4);
     }
 }
 

@@ -40,7 +40,7 @@ export class EdgeCalculatorCoefficients {
         this.turnSequencePenalty = 1;
         this.turnMergeCCPenalty = 4;
 
-        this.timeSpan = 1 / (1000 * 3600 * 24 * 30);
+        this.timeSpan = 1;
     }
 }
 
