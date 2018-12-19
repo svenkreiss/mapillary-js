@@ -148,6 +148,23 @@ describe("EdgeCalculator.computeTurnEdges", () => {
         potentialEdge2.distance = settings.turnMaxRigDistance * 2;
     });
 
+    it("should have a turn left edge based on time span", () => {
+        potentialEdge1.directionChange = Math.PI / 2;
+        potentialEdge1.capturedAt = 2;
+
+        potentialEdge2.directionChange = Math.PI / 2;
+        potentialEdge2.capturedAt = 1;
+
+        let stepEdges: IEdge[] = edgeCalculator.computeTurnEdges(node, [potentialEdge1, potentialEdge2]);
+
+        expect(stepEdges.length).toBe(1);
+
+        let stepEdge: IEdge = stepEdges[0];
+
+        expect(stepEdge.to).toBe(potentialEdge2.key);
+        expect(stepEdge.data.direction).toBe(EdgeDirection.TurnLeft);
+    });
+
     it("should have a turn left with the same sequence", () => {
         potentialEdge1.directionChange = Math.PI / 2;
         potentialEdge1.sameSequence = false;

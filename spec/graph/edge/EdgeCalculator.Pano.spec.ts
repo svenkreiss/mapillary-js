@@ -153,6 +153,20 @@ describe("EdgeCalculator.computePanoEdges", () => {
         potentialEdge2.fullPano = true;
     });
 
+    it("should have a pano edge based on time span", () => {
+        potentialEdge1.capturedAt = 2;
+        potentialEdge2.capturedAt = 1;
+
+        let panoEdges: IEdge[] = edgeCalculator.computePanoEdges(node, [potentialEdge1, potentialEdge2]);
+
+        expect(panoEdges.length).toBe(1);
+
+        let panoEdge: IEdge = panoEdges[0];
+
+        expect(panoEdge.to).toBe(potentialEdge2.key);
+        expect(panoEdge.data.direction).toBe(EdgeDirection.Pano);
+    });
+
     it("should have a pano edge closest to preferred distance", () => {
         potentialEdge1.distance = settings.panoPreferredDistance + 1;
         potentialEdge2.distance = settings.panoPreferredDistance;
@@ -401,6 +415,28 @@ describe("EdgeCalculator.computePanoEdges", () => {
         potentialEdge1 = helper.createPotentialEdge("pkey1");
         potentialEdge1.distance = settings.panoPreferredDistance;
         potentialEdge1.fullPano = false;
+    });
+
+    it("should have a step forward edge based on time span", () => {
+        potentialEdge1.motionChange = 0;
+        potentialEdge1.directionChange = 0;
+        potentialEdge1.capturedAt = 2;
+
+        const potentialEdge2: IPotentialEdge = helper.createPotentialEdge("pkey2");
+        potentialEdge2.distance = settings.panoPreferredDistance;
+        potentialEdge2.fullPano = false;
+        potentialEdge2.motionChange = 0;
+        potentialEdge2.directionChange = 0;
+        potentialEdge2.capturedAt = 1;
+
+        let panoEdges: IEdge[] = edgeCalculator.computePanoEdges(node, [potentialEdge1, potentialEdge2]);
+
+        expect(panoEdges.length).toBe(1);
+
+        let panoEdge: IEdge = panoEdges[0];
+
+        expect(panoEdge.to).toBe(potentialEdge2.key);
+        expect(panoEdge.data.direction).toBe(EdgeDirection.StepForward);
     });
 
     it("should have a step forward edge", () => {
@@ -886,6 +922,20 @@ describe("EdgeCalculator.computePerspectiveToPanoEdges", () => {
         let panoEdges: IEdge[] = calculator.computePerspectiveToPanoEdges(node, [potentialEdge1, potentialEdge2]);
 
         expect(panoEdges.length).toBe(1);
+    });
+
+    it("should return the pano edge based on time span", () => {
+        potentialEdge1.capturedAt = 2;
+        potentialEdge2.capturedAt = 1;
+
+        let panoEdges: IEdge[] = calculator.computePerspectiveToPanoEdges(node, [potentialEdge1, potentialEdge2]);
+
+        expect(panoEdges.length).toBe(1);
+
+        let panoEdge: IEdge = panoEdges[0];
+
+        expect(panoEdge.to).toBe(potentialEdge2.key);
+        expect(panoEdge.data.direction).toBe(EdgeDirection.Pano);
     });
 
     it("should return the pano edge closest to preferred distance", () => {
