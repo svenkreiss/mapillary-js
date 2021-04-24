@@ -1,4 +1,13 @@
-import * as THREE from "three";
+import {
+    Camera,
+    Intersection,
+    Object3D,
+    PerspectiveCamera,
+    Raycaster,
+    Renderer,
+    Scene,
+    Vector2,
+} from "three";
 
 import { Geometry } from "./geometry/Geometry";
 import { CreateTag } from "./tag/CreateTag";
@@ -7,29 +16,29 @@ import { Tag } from "./tag/Tag";
 
 type TagObjects = {
     tag: RenderTag<Tag>;
-    objects: THREE.Object3D[];
-    retrievableObjects: THREE.Object3D[];
+    objects: Object3D[];
+    retrievableObjects: Object3D[];
 };
 
 type CreateTagObjects = {
     tag: CreateTag<Geometry>;
-    objects: THREE.Object3D[];
+    objects: Object3D[];
 };
 
 export class TagScene {
     private _createTag: CreateTagObjects;
     private _needsRender: boolean;
     private _objectTags: { [uuid: string]: string };
-    private _raycaster: THREE.Raycaster;
-    private _retrievableObjects: THREE.Object3D[];
-    private _scene: THREE.Scene;
+    private _raycaster: Raycaster;
+    private _retrievableObjects: Object3D[];
+    private _scene: Scene;
     private _tags: { [id: string]: TagObjects };
 
-    constructor(scene?: THREE.Scene, raycaster?: THREE.Raycaster) {
+    constructor(scene?: Scene, raycaster?: Raycaster) {
         this._createTag = null;
         this._needsRender = false;
-        this._raycaster = !!raycaster ? raycaster : new THREE.Raycaster();
-        this._scene = !!scene ? scene : new THREE.Scene();
+        this._raycaster = !!raycaster ? raycaster : new Raycaster();
+        this._scene = !!scene ? scene : new Scene();
 
         this._objectTags = {};
         this._retrievableObjects = [];
@@ -82,10 +91,10 @@ export class TagScene {
         return this._createTag != null;
     }
 
-    public intersectObjects([viewportX, viewportY]: number[], camera: THREE.Camera): string[] {
-        this._raycaster.setFromCamera(new THREE.Vector2(viewportX, viewportY), camera);
+    public intersectObjects([viewportX, viewportY]: number[], camera: Camera): string[] {
+        this._raycaster.setFromCamera(new Vector2(viewportX, viewportY), camera);
 
-        const intersects: THREE.Intersection[] = this._raycaster.intersectObjects(this._retrievableObjects);
+        const intersects: Intersection[] = this._raycaster.intersectObjects(this._retrievableObjects);
         const intersectedIds: string[] = [];
         for (const intersect of intersects) {
             if (intersect.object.uuid in this._objectTags) {
@@ -128,8 +137,8 @@ export class TagScene {
     }
 
     public render(
-        perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.Renderer): void {
+        perspectiveCamera: PerspectiveCamera,
+        renderer: Renderer): void {
 
         renderer.render(this._scene, perspectiveCamera);
 

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Quaternion, Vector3 } from "three";
 
 import { StateBase } from "./StateBase";
 
@@ -34,7 +34,7 @@ export abstract class InteractiveStateBase extends StateBase {
     protected _minZoom: number;
     protected _maxZoom: number;
     protected _lookatDepth: number;
-    protected _desiredLookat: THREE.Vector3;
+    protected _desiredLookat: Vector3;
     protected _desiredCenter: number[];
 
     constructor(state: IStateBase) {
@@ -100,10 +100,10 @@ export abstract class InteractiveStateBase extends StateBase {
             return;
         }
 
-        const q: THREE.Quaternion = new THREE.Quaternion().setFromUnitVectors(this._currentCamera.up, new THREE.Vector3(0, 0, 1));
-        const qInverse: THREE.Quaternion = q.clone().invert();
+        const q: Quaternion = new Quaternion().setFromUnitVectors(this._currentCamera.up, new Vector3(0, 0, 1));
+        const qInverse: Quaternion = q.clone().invert();
 
-        const offset: THREE.Vector3 = new THREE.Vector3()
+        const offset: Vector3 = new Vector3()
             .copy(this._desiredLookat)
             .sub(this._camera.position)
             .applyQuaternion(q);
@@ -260,7 +260,7 @@ export abstract class InteractiveStateBase extends StateBase {
             newCenterY = this._spatial.clamp(newCenterY, 0, 1);
         }
 
-        this._desiredLookat = new THREE.Vector3()
+        this._desiredLookat = new Vector3()
             .fromArray(this.currentTransform.unprojectBasic([newCenterX, newCenterY], this._lookatDepth));
     }
 
@@ -282,13 +282,13 @@ export abstract class InteractiveStateBase extends StateBase {
 
         this._desiredCenter = null;
 
-        let currentLookat: THREE.Vector3 = new THREE.Vector3()
+        let currentLookat: Vector3 = new Vector3()
             .fromArray(this.currentTransform.unprojectBasic(clamped, this._lookatDepth));
 
         let previousTransform: Transform = this.previousTransform != null ?
             this.previousTransform :
             this.currentTransform;
-        let previousLookat: THREE.Vector3 = new THREE.Vector3()
+        let previousLookat: Vector3 = new Vector3()
             .fromArray(previousTransform.unprojectBasic(clamped, this._lookatDepth));
 
         this._currentCamera.lookat.copy(currentLookat);
@@ -309,10 +309,10 @@ export abstract class InteractiveStateBase extends StateBase {
             return;
         }
 
-        let q: THREE.Quaternion = new THREE.Quaternion().setFromUnitVectors(camera.up, new THREE.Vector3(0, 0, 1));
-        let qInverse: THREE.Quaternion = q.clone().invert();
+        let q: Quaternion = new Quaternion().setFromUnitVectors(camera.up, new Vector3(0, 0, 1));
+        let qInverse: Quaternion = q.clone().invert();
 
-        let offset: THREE.Vector3 = new THREE.Vector3();
+        let offset: Vector3 = new Vector3();
         offset.copy(camera.lookat).sub(camera.position);
         offset.applyQuaternion(q);
         let length: number = offset.length();
@@ -473,7 +473,7 @@ export abstract class InteractiveStateBase extends StateBase {
                 desiredBasicLookat[0] += reqX;
                 desiredBasicLookat[1] += reqY;
 
-                this._desiredLookat = new THREE.Vector3()
+                this._desiredLookat = new Vector3()
                     .fromArray(this.currentTransform.unprojectBasic(desiredBasicLookat, this._lookatDepth));
             }
 
@@ -520,7 +520,7 @@ export abstract class InteractiveStateBase extends StateBase {
             return;
         }
 
-        let lookatDirection: THREE.Vector3 = new THREE.Vector3()
+        let lookatDirection: Vector3 = new Vector3()
             .fromArray(this.currentTransform.unprojectBasic(this._desiredCenter, this._lookatDepth))
             .sub(this._currentCamera.position);
 

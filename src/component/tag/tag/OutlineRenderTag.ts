@@ -1,4 +1,12 @@
-import * as THREE from "three";
+import {
+    Camera,
+    Color,
+    Line,
+    LineBasicMaterial,
+    Material,
+    MeshBasicMaterial,
+    Object3D,
+} from "three";
 import * as vd from "virtual-dom";
 
 import { OutlineRenderTagBase } from "./OutlineRenderTagBase";
@@ -20,7 +28,7 @@ import { isSpherical } from "../../../geo/Geo";
  * @classdesc Tag visualizing the properties of an OutlineTag.
  */
 export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
-    private _holes: THREE.Line[];
+    private _holes: Line[];
 
     constructor(tag: OutlineTag, transform: Transform) {
         super(tag, transform);
@@ -49,7 +57,7 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
         this._disposeOutline();
     }
 
-    public getDOMObjects(atlas: ISpriteAtlas, camera: THREE.Camera, size: ViewportSize): vd.VNode[] {
+    public getDOMObjects(atlas: ISpriteAtlas, camera: Camera, size: ViewportSize): vd.VNode[] {
         const vNodes: vd.VNode[] = [];
         const isRect: boolean = this._tag.geometry instanceof RectGeometry;
         const isPerspective: boolean = !isSpherical(this._transform.cameraType);
@@ -215,8 +223,8 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
         return vNodes;
     }
 
-    public getGLObjects(): THREE.Object3D[] {
-        const glObjects: THREE.Object3D[] = [];
+    public getGLObjects(): Object3D[] {
+        const glObjects: Object3D[] = [];
 
         if (this._fill != null) {
             glObjects.push(this._fill);
@@ -233,7 +241,7 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
         return glObjects;
     }
 
-    public getRetrievableObjects(): THREE.Object3D[] {
+    public getRetrievableObjects(): Object3D[] {
         return this._fill != null ? [this._fill] : [];
     }
 
@@ -255,7 +263,7 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
         let glObjectsChanged: boolean = false;
 
         if (this._fill != null) {
-            this._updateFillMaterial(<THREE.MeshBasicMaterial>this._fill.material);
+            this._updateFillMaterial(<MeshBasicMaterial>this._fill.material);
         }
 
         if (this._outline == null) {
@@ -284,14 +292,14 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
             this._tag.geometry.getTriangles3d(this._transform);
     }
 
-    protected _updateFillMaterial(material: THREE.MeshBasicMaterial): void {
-        material.color = new THREE.Color(this._tag.fillColor);
+    protected _updateFillMaterial(material: MeshBasicMaterial): void {
+        material.color = new Color(this._tag.fillColor);
         material.opacity = this._tag.fillOpacity;
         material.needsUpdate = true;
     }
 
-    protected _updateLineBasicMaterial(material: THREE.LineBasicMaterial): void {
-        material.color = new THREE.Color(this._tag.lineColor);
+    protected _updateLineBasicMaterial(material: LineBasicMaterial): void {
+        material.color = new Color(this._tag.lineColor);
         material.linewidth = Math.max(this._tag.lineWidth, 1);
         material.visible = this._tag.lineWidth >= 1 && this._tag.lineOpacity > 0;
         material.opacity = this._tag.lineOpacity;
@@ -299,14 +307,14 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
         material.needsUpdate = true;
     }
 
-    private _createHoles(): THREE.Line[] {
-        let holes: THREE.Line[] = [];
+    private _createHoles(): Line[] {
+        let holes: Line[] = [];
 
         if (this._tag.geometry instanceof PolygonGeometry) {
             let holes3d: number[][][] = this._getHoles3d();
 
             for (let holePoints3d of holes3d) {
-                let hole: THREE.Line = this._createLine(holePoints3d);
+                let hole: Line = this._createLine(holePoints3d);
                 holes.push(hole);
             }
         }
@@ -317,7 +325,7 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
     private _disposeHoles(): void {
         for (let hole of this._holes) {
             hole.geometry.dispose();
-            (<THREE.Material>hole.material).dispose();
+            (<Material>hole.material).dispose();
         }
 
         this._holes = [];
@@ -344,7 +352,7 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
 
         for (let i: number = 0; i < this._holes.length; i++) {
             let holePoints3d: number[][] = holes3d[i];
-            let hole: THREE.Line = this._holes[i];
+            let hole: Line = this._holes[i];
 
             this._updateLine(hole, holePoints3d);
         }
@@ -352,11 +360,11 @@ export class OutlineRenderTag extends OutlineRenderTagBase<OutlineTag> {
 
     private _updateHoleMaterials(): void {
         for (const hole of this._holes) {
-            this._updateLineBasicMaterial(<THREE.LineBasicMaterial>hole.material);
+            this._updateLineBasicMaterial(<LineBasicMaterial>hole.material);
         }
     }
 
     private _updateOutlineMaterial(): void {
-        this._updateLineBasicMaterial(<THREE.LineBasicMaterial>this._outline.material);
+        this._updateLineBasicMaterial(<LineBasicMaterial>this._outline.material);
     }
 }

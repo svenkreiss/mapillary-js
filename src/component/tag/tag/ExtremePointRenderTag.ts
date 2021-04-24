@@ -1,4 +1,10 @@
-import * as THREE from "three";
+import {
+    Camera,
+    Color,
+    LineBasicMaterial,
+    MeshBasicMaterial,
+    Object3D,
+} from "three";
 import * as vd from "virtual-dom";
 
 import { TagOperation } from "../TagOperation";
@@ -40,7 +46,7 @@ export class ExtremePointRenderTag extends OutlineRenderTagBase<ExtremePointTag>
         this._disposeOutline();
     }
 
-    public getDOMObjects(atlas: ISpriteAtlas, camera: THREE.Camera, size: ViewportSize): vd.VNode[] {
+    public getDOMObjects(atlas: ISpriteAtlas, camera: Camera, size: ViewportSize): vd.VNode[] {
         const vNodes: vd.VNode[] = [];
         const container: { offsetHeight: number, offsetWidth: number } = {
             offsetHeight: size.height, offsetWidth: size.width,
@@ -96,8 +102,8 @@ export class ExtremePointRenderTag extends OutlineRenderTagBase<ExtremePointTag>
         return vNodes;
     }
 
-    public getGLObjects(): THREE.Object3D[] {
-        const glObjects: THREE.Object3D[] = [];
+    public getGLObjects(): Object3D[] {
+        const glObjects: Object3D[] = [];
 
         if (this._fill != null) {
             glObjects.push(this._fill);
@@ -110,7 +116,7 @@ export class ExtremePointRenderTag extends OutlineRenderTagBase<ExtremePointTag>
         return glObjects;
     }
 
-    public getRetrievableObjects(): THREE.Object3D[] {
+    public getRetrievableObjects(): Object3D[] {
         return this._fill != null ? [this._fill] : [];
     }
 
@@ -130,7 +136,7 @@ export class ExtremePointRenderTag extends OutlineRenderTagBase<ExtremePointTag>
         let glObjectsChanged: boolean = false;
 
         if (this._fill != null) {
-            this._updateFillMaterial(<THREE.MeshBasicMaterial>this._fill.material);
+            this._updateFillMaterial(<MeshBasicMaterial>this._fill.material);
         }
 
         if (this._outline == null) {
@@ -153,14 +159,14 @@ export class ExtremePointRenderTag extends OutlineRenderTagBase<ExtremePointTag>
         return this._rectGeometry.getTriangles3d(this._transform);
     }
 
-    protected _updateFillMaterial(material: THREE.MeshBasicMaterial): void {
-        material.color = new THREE.Color(this._tag.fillColor);
+    protected _updateFillMaterial(material: MeshBasicMaterial): void {
+        material.color = new Color(this._tag.fillColor);
         material.opacity = this._tag.fillOpacity;
         material.needsUpdate = true;
     }
 
-    protected _updateLineBasicMaterial(material: THREE.LineBasicMaterial): void {
-        material.color = new THREE.Color(this._tag.lineColor);
+    protected _updateLineBasicMaterial(material: LineBasicMaterial): void {
+        material.color = new Color(this._tag.lineColor);
         material.linewidth = Math.max(this._tag.lineWidth, 1);
         material.visible = this._tag.lineWidth >= 1 && this._tag.lineOpacity > 0;
         material.opacity = this._tag.lineOpacity;
@@ -169,7 +175,7 @@ export class ExtremePointRenderTag extends OutlineRenderTagBase<ExtremePointTag>
     }
 
     private _updateOutlineMaterial(): void {
-        let material: THREE.LineBasicMaterial = <THREE.LineBasicMaterial>this._outline.material;
+        let material: LineBasicMaterial = <LineBasicMaterial>this._outline.material;
 
         this._updateLineBasicMaterial(material);
     }

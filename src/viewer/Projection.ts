@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import { LngLat } from "../api/interfaces/LngLat";
 import { Spatial } from "../geo/Spatial";
@@ -99,7 +99,7 @@ export class Projection {
                     canvasY,
                     container);
 
-        const point3d = new THREE.Vector3(viewportX, viewportY, 1)
+        const point3d = new Vector3(viewportX, viewportY, 1)
             .unproject(render.perspective);
 
         let basicPoint = transform

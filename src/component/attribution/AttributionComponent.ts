@@ -1,4 +1,7 @@
-import * as vd from "virtual-dom";
+import {
+    h as VH,
+    VNode,
+} from "virtual-dom";
 
 import { combineLatest as observableCombineLatest } from "rxjs";
 import { map } from "rxjs/operators";
@@ -55,20 +58,20 @@ export class AttributionComponent extends Component<ComponentConfiguration> {
         id: string,
         capturedAt: number,
         width: number)
-        : vd.VNode {
+        : VNode {
         const compact = width <= 640;
 
-        const mapillaryIcon = vd.h(
+        const mapillaryIcon = VH(
             "div.AttributionMapillaryLogo",
             []);
-        const mapillaryLink = vd.h(
+        const mapillaryLink = VH(
             "a.AttributionIconContainer",
             { href: ViewerConfiguration.explore, target: "_blank" },
             [mapillaryIcon]);
 
         const imageBy = compact ?
             `${username}` : `image by ${username}`;
-        const imageByContent = vd.h(
+        const imageByContent = VH(
             "div.AttributionUsername",
             { textContent: imageBy },
             []);
@@ -82,13 +85,13 @@ export class AttributionComponent extends Component<ComponentConfiguration> {
                 [date[1], date[2] + ",", date[3]] :
             date).join(" ");
 
-        const dateContent = vd.h(
+        const dateContent = VH(
             "div.AttributionDate",
             { textContent: formatted },
             []);
 
         const imageLink =
-            vd.h(
+            VH(
                 "a.mapillary-attribution-image-container",
                 {
                     href: ViewerConfiguration.exploreImage(id),
@@ -99,7 +102,7 @@ export class AttributionComponent extends Component<ComponentConfiguration> {
         const compactClass = compact ?
             ".mapillary-attribution-compact" : "";
 
-        return vd.h(
+        return VH(
             "div.mapillary-attribution-container" + compactClass,
             {},
             [mapillaryLink, imageLink]);

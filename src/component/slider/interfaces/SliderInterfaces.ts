@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import { Image } from "../../../graph/Image";
 import { IAnimationState } from "../../../state/interfaces/IAnimationState";
@@ -19,8 +19,8 @@ export interface GLRendererOperation {
 }
 
 export type PositionLookat = [
-    THREE.Vector3,
-    THREE.Vector3,
+    Vector3,
+    Vector3,
     number,
     number,
     number,

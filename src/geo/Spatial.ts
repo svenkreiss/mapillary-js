@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Matrix4, Vector3 } from "three";
 
 /**
  * @class Spatial
@@ -43,17 +43,17 @@ export class Spatial {
      * Creates a rotation matrix from an angle-axis vector.
      *
      * @param {Array<number>} angleAxis - Angle-axis representation of a rotation.
-     * @returns {THREE.Matrix4} Rotation matrix.
+     * @returns {Matrix4} Rotation matrix.
      */
-    public rotationMatrix(angleAxis: number[]): THREE.Matrix4 {
-        let axis: THREE.Vector3 =
-            new THREE.Vector3(angleAxis[0], angleAxis[1], angleAxis[2]);
+    public rotationMatrix(angleAxis: number[]): Matrix4 {
+        let axis: Vector3 =
+            new Vector3(angleAxis[0], angleAxis[1], angleAxis[2]);
         let angle: number = axis.length();
         if (angle > 0) {
             axis.normalize();
         }
 
-        return new THREE.Matrix4().makeRotationAxis(axis, angle);
+        return new Matrix4().makeRotationAxis(axis, angle);
     }
 
     /**
@@ -61,11 +61,11 @@ export class Spatial {
      *
      * @param {Array<number>} vector - Vector to rotate.
      * @param {Array<number>} angleAxis - Angle-axis representation of a rotation.
-     * @returns {THREE.Vector3} Rotated vector.
+     * @returns {Vector3} Rotated vector.
      */
-    public rotate(vector: number[], angleAxis: number[]): THREE.Vector3 {
-        let v: THREE.Vector3 = new THREE.Vector3(vector[0], vector[1], vector[2]);
-        let rotationMatrix: THREE.Matrix4 = this.rotationMatrix(angleAxis);
+    public rotate(vector: number[], angleAxis: number[]): Vector3 {
+        let v: Vector3 = new Vector3(vector[0], vector[1], vector[2]);
+        let rotationMatrix: Matrix4 = this.rotationMatrix(angleAxis);
         v.applyMatrix4(rotationMatrix);
 
         return v;
@@ -78,9 +78,9 @@ export class Spatial {
      *
      * @param {Array<number>} rotation - Angle-axis representation of a rotation.
      * @param {Array<number>} translation - Translation vector.
-     * @returns {THREE.Vector3} Optical center.
+     * @returns {Vector3} Optical center.
      */
-    public opticalCenter(rotation: number[], translation: number[]): THREE.Vector3 {
+    public opticalCenter(rotation: number[], translation: number[]): Vector3 {
         let angleAxis: number[] = [-rotation[0], -rotation[1], -rotation[2]];
         let vector: number[] = [-translation[0], -translation[1], -translation[2]];
 
@@ -92,9 +92,9 @@ export class Spatial {
      * on the angle-axis representation.
      *
      * @param {number[]} rotation - Angle-axis representation of a rotation.
-     * @returns {THREE.Vector3} Viewing direction.
+     * @returns {Vector3} Viewing direction.
      */
-    public viewingDirection(rotation: number[]): THREE.Vector3 {
+    public viewingDirection(rotation: number[]): Vector3 {
         let angleAxis: number[] = [-rotation[0], -rotation[1], -rotation[2]];
 
         return this.rotate([0, 0, 1], angleAxis);
@@ -196,11 +196,11 @@ export class Spatial {
      * @returns {number} Relative rotation angle.
      */
     public relativeRotationAngle(rotation1: number[], rotation2: number[]): number {
-        let R1T: THREE.Matrix4 = this.rotationMatrix(
+        let R1T: Matrix4 = this.rotationMatrix(
             [-rotation1[0], -rotation1[1], -rotation1[2]]);
-        let R2: THREE.Matrix4 = this.rotationMatrix(rotation2);
+        let R2: Matrix4 = this.rotationMatrix(rotation2);
 
-        let R: THREE.Matrix4 = R1T.multiply(R2);
+        let R: Matrix4 = R1T.multiply(R2);
         let elements: number[] = R.elements;
 
         // from Tr(R) = 1 + 2 * cos(theta)
@@ -218,24 +218,24 @@ export class Spatial {
      * @returns {number} Angle from between plane and vector.
      */
     public angleToPlane(vector: number[], planeNormal: number[]): number {
-        let v: THREE.Vector3 = new THREE.Vector3().fromArray(vector);
+        let v: Vector3 = new Vector3().fromArray(vector);
         let norm: number = v.length();
 
         if (norm < this._epsilon) {
             return 0;
         }
 
-        let projection: number = v.dot(new THREE.Vector3().fromArray(planeNormal));
+        let projection: number = v.dot(new Vector3().fromArray(planeNormal));
 
         return Math.asin(projection / norm);
     }
 
     public azimuthal(direction: number[], up: number[]): number {
-        const directionVector: THREE.Vector3 = new THREE.Vector3().fromArray(direction);
-        const upVector: THREE.Vector3 = new THREE.Vector3().fromArray(up);
+        const directionVector: Vector3 = new Vector3().fromArray(direction);
+        const upVector: Vector3 = new Vector3().fromArray(up);
 
         const upProjection: number = directionVector.clone().dot(upVector);
-        const planeProjection: THREE.Vector3 = directionVector.clone().sub(upVector.clone().multiplyScalar(upProjection));
+        const planeProjection: Vector3 = directionVector.clone().sub(upVector.clone().multiplyScalar(upProjection));
 
         return Math.atan2(planeProjection.y, planeProjection.x);
     }

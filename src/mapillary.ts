@@ -78,6 +78,4 @@ ComponentService.register(NavigationFallbackComponent);
  *
  * Documented public API.
  */
-export * from "./external/api";
-export * from "./external/component";
-export * from "./external/viewer";
+export * from "./external/mapillary";

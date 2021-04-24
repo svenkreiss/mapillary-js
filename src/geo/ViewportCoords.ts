@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Camera, Vector3 } from "three";
 
 import { Transform } from "./Transform";
 
@@ -37,7 +37,7 @@ export class ViewportCoords {
      * @param {number} basicY - Basic Y coordinate.
      * @param {HTMLElement} container - The viewer container.
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D canvas coordinates.
      */
     public basicToCanvas(
@@ -45,7 +45,7 @@ export class ViewportCoords {
         basicY: number,
         container: { offsetHeight: number, offsetWidth: number },
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const point3d: number[] = transform.unprojectBasic([basicX, basicY], this._unprojectDepth);
@@ -65,7 +65,7 @@ export class ViewportCoords {
      * @param {number} basicY - Basic Y coordinate.
      * @param {HTMLElement} container - The viewer container.
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D canvas coordinates if the basic point represents a 3D point
      * in front of the camera, otherwise null.
      */
@@ -74,7 +74,7 @@ export class ViewportCoords {
         basicY: number,
         container: { offsetHeight: number, offsetWidth: number },
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const viewport: number[] = this.basicToViewportSafe(basicX, basicY, transform, camera);
@@ -97,14 +97,14 @@ export class ViewportCoords {
      * @param {number} basicX - Basic X coordinate.
      * @param {number} basicY - Basic Y coordinate.
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D viewport coordinates.
      */
     public basicToViewport(
         basicX: number,
         basicY: number,
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const point3d: number[] = transform.unprojectBasic([basicX, basicY], this._unprojectDepth);
@@ -123,14 +123,14 @@ export class ViewportCoords {
      * @param {number} basicX - Basic X coordinate.
      * @param {number} basicY - Basic Y coordinate.
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D viewport coordinates.
      */
     public basicToViewportSafe(
         basicX: number,
         basicY: number,
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const point3d: number[] = transform.unprojectBasic([basicX, basicY], this._unprojectDepth);
@@ -149,16 +149,16 @@ export class ViewportCoords {
      * Convert camera 3D coordinates to viewport coordinates.
      *
      * @param {number} pointCamera - 3D point in camera coordinate system.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D viewport coordinates.
      */
     public cameraToViewport(
         pointCamera: number[],
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
-        const viewport: THREE.Vector3 =
-            new THREE.Vector3().fromArray(pointCamera)
+        const viewport: Vector3 =
+            new Vector3().fromArray(pointCamera)
                 .applyMatrix4(camera.projectionMatrix);
 
         return [viewport.x, viewport.y];
@@ -190,7 +190,7 @@ export class ViewportCoords {
      * @param {number} canvasY - Canvas Y coordinate.
      * @param {HTMLElement} container - The viewer container.
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D basic coordinates.
      */
     public canvasToBasic(
@@ -198,7 +198,7 @@ export class ViewportCoords {
         canvasY: number,
         container: { offsetHeight: number, offsetWidth: number },
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const point3d: number[] =
@@ -250,12 +250,12 @@ export class ViewportCoords {
      * Determines the smallest basic distance for every side of the canvas.
      *
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} Array of basic distances as [top, right, bottom, left].
      */
     public getBasicDistances(
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const topLeftBasic: number[] = this.viewportToBasic(-1, 1, transform, camera);
@@ -305,13 +305,13 @@ export class ViewportCoords {
      *
      * @param {HTMLElement} container - The viewer container.
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} Array of pixel distances as [top, right, bottom, left].
      */
     public getPixelDistances(
         container: { offsetHeight: number, offsetWidth: number },
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const topLeftBasic: number[] = this.viewportToBasic(-1, 1, transform, camera);
@@ -395,13 +395,13 @@ export class ViewportCoords {
      *
      * @param {Array<number>} point3D - 3D world coordinates.
      * @param {HTMLElement} container - The viewer container.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D canvas coordinates.
      */
     public projectToCanvas(
         point3d: number[],
         container: { offsetHeight: number, offsetWidth: number },
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const viewport: number[] = this.projectToViewport(point3d, camera);
@@ -417,13 +417,13 @@ export class ViewportCoords {
      *
      * @param {Array<number>} point3D - 3D world coordinates.
      * @param {HTMLElement} container - The viewer container.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D canvas coordinates.
      */
     public projectToCanvasSafe(
         point3d: number[],
         container: { offsetHeight: number, offsetWidth: number },
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const pointCamera: number[] = this.worldToCamera(point3d, camera);
@@ -443,16 +443,16 @@ export class ViewportCoords {
      * Project 3D world coordinates to viewport coordinates.
      *
      * @param {Array<number>} point3D - 3D world coordinates.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D viewport coordinates.
      */
     public projectToViewport(
         point3d: number[],
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
-        const viewport: THREE.Vector3 =
-            new THREE.Vector3(point3d[0], point3d[1], point3d[2])
+        const viewport: Vector3 =
+            new Vector3(point3d[0], point3d[1], point3d[2])
                 .project(camera);
 
         return [viewport.x, viewport.y];
@@ -464,20 +464,20 @@ export class ViewportCoords {
      * @param {number} canvasX - Canvas X coordinate.
      * @param {number} canvasY - Canvas Y coordinate.
      * @param {HTMLElement} container - The viewer container.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 3D world coordinates.
      */
     public unprojectFromCanvas(
         canvasX: number,
         canvasY: number,
         container: { offsetHeight: number, offsetWidth: number },
-        camera: THREE.Camera):
-        THREE.Vector3 {
+        camera: Camera):
+        Vector3 {
 
         const viewport: number[] =
             this.canvasToViewport(canvasX, canvasY, container);
 
-        const point3d: THREE.Vector3 =
+        const point3d: Vector3 =
             this.unprojectFromViewport(viewport[0], viewport[1], camera);
 
         return point3d;
@@ -488,17 +488,17 @@ export class ViewportCoords {
      *
      * @param {number} viewportX - Viewport X coordinate.
      * @param {number} viewportY - Viewport Y coordinate.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 3D world coordinates.
      */
     public unprojectFromViewport(
         viewportX: number,
         viewportY: number,
-        camera: THREE.Camera):
-        THREE.Vector3 {
+        camera: Camera):
+        Vector3 {
 
-        const point3d: THREE.Vector3 =
-            new THREE.Vector3(viewportX, viewportY, 1)
+        const point3d: Vector3 =
+            new Vector3(viewportX, viewportY, 1)
                 .unproject(camera);
 
         return point3d;
@@ -513,18 +513,18 @@ export class ViewportCoords {
      * @param {number} viewportX - Viewport X coordinate.
      * @param {number} viewportY - Viewport Y coordinate.
      * @param {Transform} transform - Transform of the image to unproject from.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 2D basic coordinates.
      */
     public viewportToBasic(
         viewportX: number,
         viewportY: number,
         transform: Transform,
-        camera: THREE.Camera):
+        camera: Camera):
         number[] {
 
         const point3d: number[] =
-            new THREE.Vector3(viewportX, viewportY, 1)
+            new Vector3(viewportX, viewportY, 1)
                 .unproject(camera)
                 .toArray();
 
@@ -558,15 +558,15 @@ export class ViewportCoords {
      * Convert 3D world coordinates to 3D camera coordinates.
      *
      * @param {number} point3D - 3D point in world coordinate system.
-     * @param {THREE.Camera} camera - Camera used in rendering.
+     * @param {Camera} camera - Camera used in rendering.
      * @returns {Array<number>} 3D camera coordinates.
      */
     public worldToCamera(
         point3d: number[],
-        camera: THREE.Camera): number[] {
+        camera: Camera): number[] {
 
-        const pointCamera: THREE.Vector3 =
-            new THREE.Vector3(point3d[0], point3d[1], point3d[2])
+        const pointCamera: Vector3 =
+            new Vector3(point3d[0], point3d[1], point3d[2])
                 .applyMatrix4(camera.matrixWorldInverse);
 
         return pointCamera.toArray();

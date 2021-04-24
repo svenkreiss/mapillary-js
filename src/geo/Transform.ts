@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Matrix4, Vector3, Vector4 } from "three";
 import { isFisheye, isSpherical } from "./Geo";
 
 import { CameraType } from "./interfaces/CameraType";
@@ -21,11 +21,11 @@ export class Transform {
     private _basicHeight: number;
     private _basicAspect: number;
 
-    private _worldToCamera: THREE.Matrix4;
-    private _worldToCameraInverse: THREE.Matrix4;
-    private _scaledWorldToCamera: THREE.Matrix4;
-    private _scaledWorldToCameraInverse: THREE.Matrix4;
-    private _basicWorldToCamera: THREE.Matrix4;
+    private _worldToCamera: Matrix4;
+    private _worldToCameraInverse: Matrix4;
+    private _scaledWorldToCamera: Matrix4;
+    private _scaledWorldToCameraInverse: Matrix4;
+    private _basicWorldToCamera: Matrix4;
 
     private _textureScale: number[];
 
@@ -85,12 +85,12 @@ export class Transform {
         this._scale = this._getValue(scale, 0);
 
         this._worldToCamera = this.createWorldToCamera(rotation, translation);
-        this._worldToCameraInverse = new THREE.Matrix4()
+        this._worldToCameraInverse = new Matrix4()
             .copy(this._worldToCamera)
             .invert()
         this._scaledWorldToCamera =
             this._createScaledWorldToCamera(this._worldToCamera, this._scale);
-        this._scaledWorldToCameraInverse = new THREE.Matrix4()
+        this._scaledWorldToCameraInverse = new Matrix4()
             .copy(this._scaledWorldToCamera)
             .invert();
 
@@ -142,7 +142,7 @@ export class Transform {
         return this._basicHeight;
     }
 
-    public get basicRt(): THREE.Matrix4 {
+    public get basicRt(): Matrix4 {
         return this._basicWorldToCamera;
     }
 
@@ -189,25 +189,25 @@ export class Transform {
 
     /**
      * Get rt.
-     * @returns {THREE.Matrix4} The extrinsic camera matrix.
+     * @returns {Matrix4} The extrinsic camera matrix.
      */
-    public get rt(): THREE.Matrix4 {
+    public get rt(): Matrix4 {
         return this._worldToCamera;
     }
 
     /**
      * Get srt.
-     * @returns {THREE.Matrix4} The scaled extrinsic camera matrix.
+     * @returns {Matrix4} The scaled extrinsic camera matrix.
      */
-    public get srt(): THREE.Matrix4 {
+    public get srt(): Matrix4 {
         return this._scaledWorldToCamera;
     }
 
     /**
      * Get srtInverse.
-     * @returns {THREE.Matrix4} The scaled extrinsic camera matrix.
+     * @returns {Matrix4} The scaled extrinsic camera matrix.
      */
-    public get srtInverse(): THREE.Matrix4 {
+    public get srtInverse(): Matrix4 {
         return this._scaledWorldToCameraInverse;
     }
 
@@ -251,22 +251,22 @@ export class Transform {
     /**
      * Calculate the up vector for the image transform.
      *
-     * @returns {THREE.Vector3} Normalized and orientation adjusted up vector.
+     * @returns {Vector3} Normalized and orientation adjusted up vector.
      */
-    public upVector(): THREE.Vector3 {
+    public upVector(): Vector3 {
         let rte: number[] = this._worldToCamera.elements;
 
         switch (this._orientation) {
             case 1:
-                return new THREE.Vector3(-rte[1], -rte[5], -rte[9]);
+                return new Vector3(-rte[1], -rte[5], -rte[9]);
             case 3:
-                return new THREE.Vector3(rte[1], rte[5], rte[9]);
+                return new Vector3(rte[1], rte[5], rte[9]);
             case 6:
-                return new THREE.Vector3(-rte[0], -rte[4], -rte[8]);
+                return new Vector3(-rte[0], -rte[4], -rte[8]);
             case 8:
-                return new THREE.Vector3(rte[0], rte[4], rte[8]);
+                return new Vector3(rte[0], rte[4], rte[8]);
             default:
-                return new THREE.Vector3(-rte[1], -rte[5], -rte[9]);
+                return new Vector3(-rte[1], -rte[5], -rte[9]);
         }
     }
 
@@ -274,14 +274,14 @@ export class Transform {
      * Calculate projector matrix for projecting 3D points to texture map
      * coordinates (u and v).
      *
-     * @returns {THREE.Matrix4} Projection matrix for 3D point to texture
+     * @returns {Matrix4} Projection matrix for 3D point to texture
      * map coordinate calculations.
      */
-    public projectorMatrix(): THREE.Matrix4 {
-        let projector: THREE.Matrix4 = this._normalizedToTextureMatrix();
+    public projectorMatrix(): Matrix4 {
+        let projector: Matrix4 = this._normalizedToTextureMatrix();
 
         let f: number = this._focal;
-        let projection: THREE.Matrix4 = new THREE.Matrix4().set(
+        let projection: Matrix4 = new Matrix4().set(
             f, 0, 0, 0,
             0, f, 0, 0,
             0, 0, 0, 0,
@@ -326,7 +326,7 @@ export class Transform {
      * @return {Array<number>} 2D SfM coordinates.
      */
     public projectSfM(point3d: number[]): number[] {
-        let v: THREE.Vector4 = new THREE.Vector4(point3d[0], point3d[1], point3d[2], 1);
+        let v: Vector4 = new Vector4(point3d[0], point3d[1], point3d[2], 1);
         v.applyMatrix4(this._worldToCamera);
         return this._bearingToSfm([v.x, v.y, v.z]);
     }
@@ -348,12 +348,12 @@ export class Transform {
         depth?: boolean): number[] {
         const bearing = this._sfmToBearing(sfm);
         const unprojectedCamera = depth && !isSpherical(this._cameraType) ?
-            new THREE.Vector4(
+            new Vector4(
                 distance * bearing[0] / bearing[2],
                 distance * bearing[1] / bearing[2],
                 distance,
                 1) :
-            new THREE.Vector4(
+            new Vector4(
                 distance * bearing[0],
                 distance * bearing[1],
                 distance * bearing[2],
@@ -403,7 +403,7 @@ export class Transform {
             const xn: number = dxn / d;
             const yn: number = dyn / d;
 
-            let v: THREE.Vector3 = new THREE.Vector3(xn, yn, 1);
+            let v: Vector3 = new Vector3(xn, yn, 1);
             v.normalize();
             return [v.x, v.y, v.z];
         }
@@ -603,21 +603,21 @@ export class Transform {
      *
      * @param {Array<number>} rotation - Rotation vector in angle axis representation.
      * @param {Array<number>} translation - Translation vector.
-     * @returns {THREE.Matrix4} Extrisic camera matrix.
+     * @returns {Matrix4} Extrisic camera matrix.
      */
     private createWorldToCamera(
         rotation: number[],
-        translation: number[]): THREE.Matrix4 {
-        const axis = new THREE.Vector3(rotation[0], rotation[1], rotation[2]);
+        translation: number[]): Matrix4 {
+        const axis = new Vector3(rotation[0], rotation[1], rotation[2]);
         const angle = axis.length();
         if (angle > 0) {
             axis.normalize();
         }
 
-        const worldToCamera = new THREE.Matrix4();
+        const worldToCamera = new Matrix4();
         worldToCamera.makeRotationAxis(axis, angle);
         worldToCamera.setPosition(
-            new THREE.Vector3(
+            new Vector3(
                 translation[0],
                 translation[1],
                 translation[2]));
@@ -628,24 +628,24 @@ export class Transform {
     /**
      * Calculates the scaled extrinsic camera matrix scale * [ R | t ].
      *
-     * @param {THREE.Matrix4} worldToCamera - Extrisic camera matrix.
+     * @param {Matrix4} worldToCamera - Extrisic camera matrix.
      * @param {number} scale - Scale factor.
-     * @returns {THREE.Matrix4} Scaled extrisic camera matrix.
+     * @returns {Matrix4} Scaled extrisic camera matrix.
      */
     private _createScaledWorldToCamera(
-        worldToCamera: THREE.Matrix4,
-        scale: number): THREE.Matrix4 {
+        worldToCamera: Matrix4,
+        scale: number): Matrix4 {
         const scaledWorldToCamera = worldToCamera.clone();
         const elements = scaledWorldToCamera.elements;
         elements[12] = scale * elements[12];
         elements[13] = scale * elements[13];
         elements[14] = scale * elements[14];
-        scaledWorldToCamera.scale(new THREE.Vector3(scale, scale, scale));
+        scaledWorldToCamera.scale(new Vector3(scale, scale, scale));
         return scaledWorldToCamera;
     }
 
-    private _createBasicWorldToCamera(rt: THREE.Matrix4, orientation: number): THREE.Matrix4 {
-        const axis: THREE.Vector3 = new THREE.Vector3(0, 0, 1);
+    private _createBasicWorldToCamera(rt: Matrix4, orientation: number): Matrix4 {
+        const axis: Vector3 = new Vector3(0, 0, 1);
         let angle: number = 0;
 
         switch (orientation) {
@@ -662,7 +662,7 @@ export class Transform {
                 break;
         }
 
-        return new THREE.Matrix4()
+        return new Matrix4()
             .makeRotationAxis(axis, angle)
             .multiply(rt);
     }
@@ -694,10 +694,10 @@ export class Transform {
      * Calculate a transformation matrix from normalized coordinates for
      * texture map coordinates.
      *
-     * @returns {THREE.Matrix4} Normalized coordinates to texture map
+     * @returns {Matrix4} Normalized coordinates to texture map
      * coordinates transformation matrix.
      */
-    private _normalizedToTextureMatrix(): THREE.Matrix4 {
+    private _normalizedToTextureMatrix(): Matrix4 {
         const size: number = Math.max(this._width, this._height);
 
         const scaleX: number = this._orientation < 5 ? this._textureScale[0] : this._textureScale[1];
@@ -708,15 +708,15 @@ export class Transform {
 
         switch (this._orientation) {
             case 1:
-                return new THREE.Matrix4().set(w, 0, 0, 0.5, 0, -h, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
+                return new Matrix4().set(w, 0, 0, 0.5, 0, -h, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
             case 3:
-                return new THREE.Matrix4().set(-w, 0, 0, 0.5, 0, h, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
+                return new Matrix4().set(-w, 0, 0, 0.5, 0, h, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
             case 6:
-                return new THREE.Matrix4().set(0, -h, 0, 0.5, -w, 0, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
+                return new Matrix4().set(0, -h, 0, 0.5, -w, 0, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
             case 8:
-                return new THREE.Matrix4().set(0, h, 0, 0.5, w, 0, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
+                return new Matrix4().set(0, h, 0, 0.5, w, 0, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
             default:
-                return new THREE.Matrix4().set(w, 0, 0, 0.5, 0, -h, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
+                return new Matrix4().set(w, 0, 0, 0.5, 0, -h, 0, 0.5, 0, 0, 1, 0, 0, 0, 0, 1);
         }
     }
 }

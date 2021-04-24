@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import {
     of as observableOf,
@@ -175,7 +175,7 @@ export class PanService {
                         withLatestFrom(this._stateService.reference$),
                         map(
                             ([[cn, adjacent], reference]: [[Image, Image[]], LngLatAlt]): [Image, Transform, number][] => {
-                                const currentDirection: THREE.Vector3 = this._spatial.viewingDirection(cn.rotation);
+                                const currentDirection: Vector3 = this._spatial.viewingDirection(cn.rotation);
                                 const currentTranslation: number[] = Geo.computeTranslation(
                                     { lat: cn.lngLat.lat, lng: cn.lngLat.lng, alt: cn.computedAltitude },
                                     cn.rotation,
@@ -206,7 +206,7 @@ export class PanService {
                                     const projectedPoints: number[][] = this._computeProjectedPoints(transform);
                                     const hFov: number = this._computeHorizontalFov(projectedPoints) / 180 * Math.PI;
 
-                                    const direction: THREE.Vector3 = this._spatial.viewingDirection(a.rotation);
+                                    const direction: Vector3 = this._spatial.viewingDirection(a.rotation);
                                     const azimuthal: number = this._spatial.wrap(
                                         this._spatial.azimuthal(
                                             direction.toArray(),

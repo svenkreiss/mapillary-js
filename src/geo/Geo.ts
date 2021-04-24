@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Camera, Vector3 } from "three";
 
 import { Spatial } from "./Spatial";
 import { Transform } from "./Transform";
@@ -25,7 +25,7 @@ export function computeTranslation(position: LngLatAlt, rotation: number[], refe
         reference.lat,
         reference.alt);
 
-    const RC: THREE.Vector3 = spatial.rotate(C, rotation);
+    const RC: Vector3 = spatial.rotate(C, rotation);
     const translation: number[] = [-RC.x, -RC.y, -RC.z];
 
     return translation;
@@ -50,10 +50,10 @@ export function computeProjectedPoints(
         }
     }
 
-    const camera: THREE.Camera = new THREE.Camera();
+    const camera: Camera = new Camera();
     camera.up.copy(transform.upVector());
-    camera.position.copy(new THREE.Vector3().fromArray(transform.unprojectSfM([0, 0], 0)));
-    camera.lookAt(new THREE.Vector3().fromArray(transform.unprojectSfM([0, 0], 10)));
+    camera.position.copy(new Vector3().fromArray(transform.unprojectSfM([0, 0], 0)));
+    camera.lookAt(new Vector3().fromArray(transform.unprojectSfM([0, 0], 10)));
     camera.updateMatrix();
     camera.updateMatrixWorld(true);
 

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { PerspectiveCamera } from "three";
 import * as vd from "virtual-dom";
 
 import { Geometry } from "./geometry/Geometry";
@@ -14,7 +14,7 @@ export class TagDOMRenderer {
         tags: RenderTag<Tag>[],
         createTag: CreateTag<Geometry>,
         atlas: ISpriteAtlas,
-        camera: THREE.PerspectiveCamera,
+        camera: PerspectiveCamera,
         size: ViewportSize): vd.VNode {
 
         let vNodes: vd.VNode[] = [];

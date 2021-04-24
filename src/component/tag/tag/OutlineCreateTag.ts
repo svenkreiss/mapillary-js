@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Camera, Line } from "three";
 import * as vd from "virtual-dom";
 
 import { CreateTag } from "./CreateTag";
@@ -13,7 +13,7 @@ import { ViewportCoords } from "../../../geo/ViewportCoords";
 import { ViewportSize } from "../../../render/interfaces/ViewportSize";
 
 export class OutlineCreateTag extends CreateTag<VertexGeometry> {
-    private _outline: THREE.Line;
+    private _outline: Line;
     private _options: OutlineCreateTagOptions;
 
     constructor(
@@ -45,7 +45,7 @@ export class OutlineCreateTag extends CreateTag<VertexGeometry> {
         this._disposeObjects();
     }
 
-    public getDOMObjects(camera: THREE.Camera, size: ViewportSize): vd.VNode[] {
+    public getDOMObjects(camera: Camera, size: ViewportSize): vd.VNode[] {
         const vNodes: vd.VNode[] = [];
         const container: { offsetHeight: number, offsetWidth: number } = {
             offsetHeight: size.height, offsetWidth: size.width,

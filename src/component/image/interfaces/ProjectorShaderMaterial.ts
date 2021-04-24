@@ -1,9 +1,9 @@
-import * as THREE from "three";
+import { IUniform, ShaderMaterial } from "three";
 
-export interface ProjectorShaderMaterial extends THREE.ShaderMaterial {
+export interface ProjectorShaderMaterial extends ShaderMaterial {
     uniforms: {
-        [uniform: string]: THREE.IUniform;
-        opacity: THREE.IUniform;
-        projectorTex: THREE.IUniform;
+        [uniform: string]: IUniform;
+        opacity: IUniform;
+        projectorTex: IUniform;
     };
 }

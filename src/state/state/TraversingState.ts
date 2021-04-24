@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import { InteractiveStateBase } from "./InteractiveStateBase";
 import { IStateBase } from "../interfaces/IStateBase";
@@ -143,7 +143,7 @@ export class TraversingState extends InteractiveStateBase {
             return;
         }
 
-        let lookat: THREE.Vector3 = this._camera.lookat.clone().sub(this._camera.position);
+        let lookat: Vector3 = this._camera.lookat.clone().sub(this._camera.position);
         this._previousCamera.lookat.copy(lookat.clone().add(this._previousCamera.position));
 
         if (isSpherical(this._currentImage.cameraType)) {

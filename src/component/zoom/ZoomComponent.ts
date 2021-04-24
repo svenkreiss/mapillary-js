@@ -96,7 +96,7 @@ export class ZoomComponent extends Component<ZoomConfiguration> {
                 this._navigator.stateService.currentTransform$))
             .subscribe(
                 ([zoomDelta, render, transform]: [number, RenderCamera, Transform]): void => {
-                    const unprojected: THREE.Vector3 = this._viewportCoords.unprojectFromViewport(0, 0, render.perspective);
+                    const unprojected = this._viewportCoords.unprojectFromViewport(0, 0, render.perspective);
                     const reference: number[] = transform.projectBasic(unprojected.toArray());
 
                     this._navigator.stateService.zoomIn(zoomDelta, reference);

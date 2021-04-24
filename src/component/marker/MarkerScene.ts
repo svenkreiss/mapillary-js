@@ -1,22 +1,31 @@
-import * as THREE from "three";
+import {
+    Camera,
+    Intersection,
+    Object3D,
+    PerspectiveCamera,
+    Raycaster,
+    Scene,
+    Vector2,
+    WebGLRenderer,
+} from "three";
 import { LngLat } from "../../api/interfaces/LngLat";
 import { Marker } from "./marker/Marker";
 
 export class MarkerScene {
     private _needsRender: boolean;
-    private _interactiveObjects: THREE.Object3D[];
+    private _interactiveObjects: Object3D[];
     private _markers: { [key: string]: Marker };
     private _objectMarkers: { [id: string]: string };
-    private _raycaster: THREE.Raycaster;
-    private _scene: THREE.Scene;
+    private _raycaster: Raycaster;
+    private _scene: Scene;
 
-    constructor(scene?: THREE.Scene, raycaster?: THREE.Raycaster) {
+    constructor(scene?: Scene, raycaster?: Raycaster) {
         this._needsRender = false;
         this._interactiveObjects = [];
         this._markers = {};
         this._objectMarkers = {};
-        this._raycaster = !!raycaster ? raycaster : new THREE.Raycaster();
-        this._scene = !!scene ? scene : new THREE.Scene();
+        this._raycaster = !!raycaster ? raycaster : new Raycaster();
+        this._scene = !!scene ? scene : new Scene();
     }
 
     public get markers(): { [key: string]: Marker } {
@@ -69,10 +78,10 @@ export class MarkerScene {
         return id in this._markers;
     }
 
-    public intersectObjects([viewportX, viewportY]: number[], camera: THREE.Camera): string {
-        this._raycaster.setFromCamera(new THREE.Vector2(viewportX, viewportY), camera);
+    public intersectObjects([viewportX, viewportY]: number[], camera: Camera): string {
+        this._raycaster.setFromCamera(new Vector2(viewportX, viewportY), camera);
 
-        const intersects: THREE.Intersection[] = this._raycaster.intersectObjects(this._interactiveObjects);
+        const intersects: Intersection[] = this._raycaster.intersectObjects(this._interactiveObjects);
         for (const intersect of intersects) {
             if (intersect.object.uuid in this._objectMarkers) {
                 return this._objectMarkers[intersect.object.uuid];
@@ -103,8 +112,8 @@ export class MarkerScene {
     }
 
     public render(
-        perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer): void {
+        perspectiveCamera: PerspectiveCamera,
+        renderer: WebGLRenderer): void {
 
         renderer.render(this._scene, perspectiveCamera);
 

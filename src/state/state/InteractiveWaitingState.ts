@@ -2,6 +2,7 @@ import { InteractiveStateBase } from "./InteractiveStateBase";
 import { IStateBase } from "../interfaces/IStateBase";
 import { Image } from "../../graph/Image";
 import { isSpherical } from "../../geo/Geo";
+import { Vector3 } from "three";
 
 export class InteractiveWaitingState extends InteractiveStateBase {
     constructor(state: IStateBase) {
@@ -67,12 +68,12 @@ export class InteractiveWaitingState extends InteractiveStateBase {
         }
 
         if (isSpherical(this._currentImage.cameraType)) {
-            let lookat: THREE.Vector3 = this._camera.lookat.clone().sub(this._camera.position);
+            let lookat: Vector3 = this._camera.lookat.clone().sub(this._camera.position);
             this._currentCamera.lookat.copy(lookat.clone().add(this._currentCamera.position));
         }
 
         if (isSpherical(this._previousImage.cameraType)) {
-            let lookat: THREE.Vector3 = this._currentCamera.lookat.clone().sub(this._currentCamera.position);
+            let lookat: Vector3 = this._currentCamera.lookat.clone().sub(this._currentCamera.position);
             this._previousCamera.lookat.copy(lookat.clone().add(this._previousCamera.position));
         }
     }

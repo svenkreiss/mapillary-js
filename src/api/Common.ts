@@ -1,4 +1,4 @@
-import * as pako from "pako";
+import { inflate, Data, } from "pako";
 import Pbf from "pbf";
 import { MapillaryError } from "../error/MapillaryError";
 import { MeshContract } from "./contracts/MeshContract";
@@ -15,7 +15,7 @@ import { MeshContract } from "./contracts/MeshContract";
  */
 export function decompress<T>(buffer: ArrayBuffer): T {
     const inflated: string =
-        pako.inflate(<pako.Data>buffer, { to: "string" });
+        inflate(<Data>buffer, { to: "string" });
 
     return <T>JSON.parse(inflated);
 }

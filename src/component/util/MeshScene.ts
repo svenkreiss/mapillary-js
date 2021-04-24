@@ -1,51 +1,51 @@
-import * as THREE from "three";
+import { Material, Mesh, Scene, Texture } from "three";
 
 import { ProjectorShaderMaterial } from "../image/interfaces/ProjectorShaderMaterial";
 
 export class MeshScene {
-    private _planes: { [key: string]: THREE.Mesh };
-    private _planesOld: { [key: string]: THREE.Mesh };
-    private _planesPeriphery: { [key: string]: THREE.Mesh };
+    private _planes: { [key: string]: Mesh };
+    private _planesOld: { [key: string]: Mesh };
+    private _planesPeriphery: { [key: string]: Mesh };
 
-    private _scene: THREE.Scene;
-    private _sceneOld: THREE.Scene;
-    private _scenePeriphery: THREE.Scene;
+    private _scene: Scene;
+    private _sceneOld: Scene;
+    private _scenePeriphery: Scene;
 
     constructor() {
         this._planes = {};
         this._planesOld = {};
         this._planesPeriphery = {};
 
-        this._scene = new THREE.Scene();
-        this._sceneOld = new THREE.Scene();
-        this._scenePeriphery = new THREE.Scene();
+        this._scene = new Scene();
+        this._sceneOld = new Scene();
+        this._scenePeriphery = new Scene();
     }
 
-    public get planes(): { [key: string]: THREE.Mesh } {
+    public get planes(): { [key: string]: Mesh } {
         return this._planes;
     }
 
-    public get planesOld(): { [key: string]: THREE.Mesh } {
+    public get planesOld(): { [key: string]: Mesh } {
         return this._planesOld;
     }
 
-    public get planesPeriphery(): { [key: string]: THREE.Mesh } {
+    public get planesPeriphery(): { [key: string]: Mesh } {
         return this._planesPeriphery;
     }
 
-    public get scene(): THREE.Scene {
+    public get scene(): Scene {
         return this._scene;
     }
 
-    public get sceneOld(): THREE.Scene {
+    public get sceneOld(): Scene {
         return this._sceneOld;
     }
 
-    public get scenePeriphery(): THREE.Scene {
+    public get scenePeriphery(): Scene {
         return this._scenePeriphery;
     }
 
-    public updateImagePlanes(planes: { [key: string]: THREE.Mesh }): void {
+    public updateImagePlanes(planes: { [key: string]: Mesh }): void {
         this._dispose(this._planesOld, this.sceneOld);
 
         for (const key in this._planes) {
@@ -54,7 +54,7 @@ export class MeshScene {
 
             }
 
-            const plane: THREE.Mesh = this._planes[key];
+            const plane: Mesh = this._planes[key];
             this._scene.remove(plane);
             this._sceneOld.add(plane);
         }
@@ -71,53 +71,53 @@ export class MeshScene {
         this._planes = planes;
     }
 
-    public addImagePlanes(planes: { [key: string]: THREE.Mesh }): void {
+    public addImagePlanes(planes: { [key: string]: Mesh }): void {
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             this._scene.add(plane);
             this._planes[key] = plane;
         }
     }
 
-    public addImagePlanesOld(planes: { [key: string]: THREE.Mesh }): void {
+    public addImagePlanesOld(planes: { [key: string]: Mesh }): void {
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             this._sceneOld.add(plane);
             this._planesOld[key] = plane;
         }
     }
 
-    public setImagePlanes(planes: { [key: string]: THREE.Mesh }): void {
+    public setImagePlanes(planes: { [key: string]: Mesh }): void {
         this._clear();
         this.addImagePlanes(planes);
     }
 
-    public addPeripheryPlanes(planes: { [key: string]: THREE.Mesh }): void {
+    public addPeripheryPlanes(planes: { [key: string]: Mesh }): void {
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             this._scenePeriphery.add(plane);
             this._planesPeriphery[key] = plane;
         }
     }
 
-    public setPeripheryPlanes(planes: { [key: string]: THREE.Mesh }): void {
+    public setPeripheryPlanes(planes: { [key: string]: Mesh }): void {
         this._clearPeriphery();
         this.addPeripheryPlanes(planes);
     }
 
-    public setImagePlanesOld(planes: { [key: string]: THREE.Mesh }): void {
+    public setImagePlanesOld(planes: { [key: string]: Mesh }): void {
         this._clearOld();
         this.addImagePlanesOld(planes);
     }
@@ -142,17 +142,17 @@ export class MeshScene {
         this._planesPeriphery = {};
     }
 
-    private _dispose(planes: { [key: string]: THREE.Mesh }, scene: THREE.Scene): void {
+    private _dispose(planes: { [key: string]: Mesh }, scene: Scene): void {
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             scene.remove(plane);
             plane.geometry.dispose();
-            (<THREE.Material>plane.material).dispose();
-            let texture: THREE.Texture = (<ProjectorShaderMaterial>plane.material).uniforms.projectorTex.value;
+            (<Material>plane.material).dispose();
+            let texture: Texture = (<ProjectorShaderMaterial>plane.material).uniforms.projectorTex.value;
             if (texture != null) {
                 texture.dispose();
             }

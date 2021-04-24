@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Camera, Vector3 } from "three";
 
 import {
     empty as observableEmpty,
@@ -93,14 +93,14 @@ export class EarthControlHandler extends HandlerBase<MouseConfiguration> {
                     const planePoint: number[] = transform.unprojectBasic([0.5, 0.5], 0);
                     planePoint[2] -= 2;
 
-                    const currentIntersection: THREE.Vector3 = this._planeIntersection(
+                    const currentIntersection: Vector3 = this._planeIntersection(
                         current,
                         planeNormal,
                         planePoint,
                         render.perspective,
                         this._container.container);
 
-                    const previousIntersection: THREE.Vector3 = this._planeIntersection(
+                    const previousIntersection: Vector3 = this._planeIntersection(
                         previous,
                         planeNormal,
                         planePoint,
@@ -111,7 +111,7 @@ export class EarthControlHandler extends HandlerBase<MouseConfiguration> {
                         return null;
                     }
 
-                    const direction: number[] = new THREE.Vector3()
+                    const direction: number[] = new Vector3()
                         .subVectors(currentIntersection, previousIntersection)
                         .multiplyScalar(-1)
                         .toArray();
@@ -232,11 +232,11 @@ export class EarthControlHandler extends HandlerBase<MouseConfiguration> {
         event: MouseEvent,
         planeNormal: number[],
         planePoint: number[],
-        camera: THREE.Camera,
-        element: HTMLElement): THREE.Vector3 {
+        camera: Camera,
+        element: HTMLElement): Vector3 {
 
         const [canvasX, canvasY]: number[] = this._viewportCoords.canvasPosition(event, element);
-        const direction: THREE.Vector3 =
+        const direction: Vector3 =
             this._viewportCoords
                 .unprojectFromCanvas(
                     canvasX,
@@ -250,13 +250,13 @@ export class EarthControlHandler extends HandlerBase<MouseConfiguration> {
             return null;
         }
 
-        const l0: THREE.Vector3 = camera.position.clone();
-        const n: THREE.Vector3 = new THREE.Vector3().fromArray(planeNormal);
-        const p0: THREE.Vector3 = new THREE.Vector3().fromArray(planePoint);
+        const l0: Vector3 = camera.position.clone();
+        const n: Vector3 = new Vector3().fromArray(planeNormal);
+        const p0: Vector3 = new Vector3().fromArray(planePoint);
 
-        const d: number = new THREE.Vector3().subVectors(p0, l0).dot(n) / direction.clone().dot(n);
+        const d: number = new Vector3().subVectors(p0, l0).dot(n) / direction.clone().dot(n);
 
-        const intersection: THREE.Vector3 = new THREE.Vector3().addVectors(l0, direction.multiplyScalar(d));
+        const intersection: Vector3 = new Vector3().addVectors(l0, direction.multiplyScalar(d));
 
         if (this._viewportCoords.worldToCamera(intersection.toArray(), camera)[2] > 0) {
             return null;

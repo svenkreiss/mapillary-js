@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import {
     merge as observableMerge,
@@ -103,7 +103,7 @@ export class TouchZoomHandler extends HandlerBase<MouseConfiguration> {
 
                     let [canvasX, canvasY]: number[] = this._viewportCoords.canvasPosition(pinch, element);
 
-                    let unprojected: THREE.Vector3 =
+                    let unprojected: Vector3 =
                         this._viewportCoords.unprojectFromCanvas(
                             canvasX,
                             canvasY,

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Mesh, PerspectiveCamera, Texture, WebGLRenderer } from "three";
 import { Subscription } from "rxjs";
 
 import { IAnimationState } from "../../state/interfaces/IAnimationState";
@@ -54,8 +54,8 @@ export class ImageGLRenderer {
     }
 
     public addPeripheryPlane(image: Image, transform: Transform): void {
-        const mesh: THREE.Mesh = this._factory.createMesh(image, transform);
-        const planes: { [key: string]: THREE.Mesh } = {};
+        const mesh: Mesh = this._factory.createMesh(image, transform);
+        const planes: { [key: string]: Mesh } = {};
         planes[image.id] = mesh;
         this._scene.addPeripheryPlanes(planes);
 
@@ -82,7 +82,7 @@ export class ImageGLRenderer {
 
         let createdSubscription: Subscription = provider.textureCreated$
             .subscribe(
-                (texture: THREE.Texture): void => {
+                (texture: Texture): void => {
                     this._updateTexture(texture);
                 });
 
@@ -114,7 +114,7 @@ export class ImageGLRenderer {
         : void {
         this._needsRender = true;
 
-        const planes: { [key: string]: THREE.Mesh } =
+        const planes: { [key: string]: Mesh } =
             this._extend({}, this._scene.planes, this._scene.planesOld, this._scene.planesPeriphery);
 
         for (const key in planes) {
@@ -126,10 +126,10 @@ export class ImageGLRenderer {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
 
             let material: ProjectorShaderMaterial = <ProjectorShaderMaterial>plane.material;
-            let texture: THREE.Texture = <THREE.Texture>material.uniforms.projectorTex.value;
+            let texture: Texture = <Texture>material.uniforms.projectorTex.value;
 
             texture.image = imageElement;
             texture.needsUpdate = true;
@@ -137,12 +137,12 @@ export class ImageGLRenderer {
     }
 
     public render(
-        perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer): void {
+        perspectiveCamera: PerspectiveCamera,
+        renderer: WebGLRenderer): void {
 
-        const planes: { [key: string]: THREE.Mesh } = this._scene.planes;
-        const planesOld: { [key: string]: THREE.Mesh } = this._scene.planesOld;
-        const planesPeriphery: { [key: string]: THREE.Mesh } = this._scene.planesPeriphery;
+        const planes: { [key: string]: Mesh } = this._scene.planes;
+        const planesOld: { [key: string]: Mesh } = this._scene.planesOld;
+        const planesPeriphery: { [key: string]: Mesh } = this._scene.planesPeriphery;
 
         const planeAlpha: number = Object.keys(planesOld).length ? 1 : this._alpha;
         const peripheryAlpha: number = Object.keys(planesOld).length ? 1 : Math.floor(this._alpha);
@@ -152,7 +152,7 @@ export class ImageGLRenderer {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = planeAlpha;
         }
 
@@ -161,7 +161,7 @@ export class ImageGLRenderer {
                 continue;
             }
 
-            const plane: THREE.Mesh = planesOld[key];
+            const plane: Mesh = planesOld[key];
             (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = this._alphaOld;
         }
 
@@ -170,7 +170,7 @@ export class ImageGLRenderer {
                 continue;
             }
 
-            const plane: THREE.Mesh = planesPeriphery[key];
+            const plane: Mesh = planesPeriphery[key];
             (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = peripheryAlpha;
         }
 
@@ -183,7 +183,7 @@ export class ImageGLRenderer {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = this._alpha;
         }
 
@@ -243,10 +243,10 @@ export class ImageGLRenderer {
 
         if (previousKey != null) {
             if (previousKey !== this._currentKey && previousKey !== this._previousKey) {
-                let previousMesh: THREE.Mesh =
+                let previousMesh: Mesh =
                     this._factory.createMesh(state.previousImage, state.previousTransform);
 
-                const previousPlanes: { [key: string]: THREE.Mesh } = {};
+                const previousPlanes: { [key: string]: Mesh } = {};
                 previousPlanes[previousKey] = previousMesh;
                 this._scene.updateImagePlanes(previousPlanes);
             }
@@ -260,7 +260,7 @@ export class ImageGLRenderer {
                 state.currentImage,
                 state.currentTransform);
 
-        const planes: { [key: string]: THREE.Mesh } = {};
+        const planes: { [key: string]: Mesh } = {};
         planes[currentKey] = currentMesh;
         this._scene.updateImagePlanes(planes);
 
@@ -269,20 +269,20 @@ export class ImageGLRenderer {
         return true;
     }
 
-    private _updateTexture(texture: THREE.Texture): void {
+    private _updateTexture(texture: Texture): void {
         this._needsRender = true;
 
-        const planes: { [key: string]: THREE.Mesh } = this._scene.planes;
+        const planes: { [key: string]: Mesh } = this._scene.planes;
 
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             let material: ProjectorShaderMaterial = <ProjectorShaderMaterial>plane.material;
 
-            let oldTexture: THREE.Texture = <THREE.Texture>material.uniforms.projectorTex.value;
+            let oldTexture: Texture = <Texture>material.uniforms.projectorTex.value;
             material.uniforms.projectorTex.value = null;
             oldTexture.dispose();
 

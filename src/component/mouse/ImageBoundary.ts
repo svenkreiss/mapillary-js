@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { PerspectiveCamera } from "three";
 
 import * as Lines from "../../geo/Lines";
 import { Transform } from "../../geo/Transform";
@@ -30,7 +30,10 @@ function insideBasic(x: number, y: number): boolean {
     return x >= 0 && x <= 1 && y >= 0 && y <= 1;
 }
 
-export function viewportDistances(transform: Transform, perspective: THREE.PerspectiveCamera, viewportCoords: ViewportCoords): number[] {
+export function viewportDistances(
+    transform: Transform,
+    perspective: PerspectiveCamera,
+    viewportCoords: ViewportCoords): number[] {
     const boundaryPointsBasic: number[][] = basicBoundaryPoints(100);
     const boundaryPointsViewport: number[][] = boundaryPointsBasic
         .map(

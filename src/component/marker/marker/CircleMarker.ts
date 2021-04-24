@@ -1,4 +1,10 @@
-import * as THREE from "three";
+import {
+    CircleGeometry,
+    Material,
+    Mesh,
+    MeshBasicMaterial,
+    Object3D,
+} from "three";
 import { LngLat } from "../../../api/interfaces/LngLat";
 import { CircleMarkerOptions } from "../interfaces/CircleMarkerOptions";
 import { Marker } from "./Marker";
@@ -47,9 +53,9 @@ export class CircleMarker extends Marker {
     }
 
     protected _createGeometry(position: number[]): void {
-        const circle: THREE.Mesh = new THREE.Mesh(
-            new THREE.CircleGeometry(this._radius, 16),
-            new THREE.MeshBasicMaterial({
+        const circle: Mesh = new Mesh(
+            new CircleGeometry(this._radius, 16),
+            new MeshBasicMaterial({
                 color: this._color,
                 opacity: this._opacity,
                 transparent: true,
@@ -58,7 +64,7 @@ export class CircleMarker extends Marker {
         circle.up.fromArray([0, 0, 1]);
         circle.renderOrder = -1;
 
-        const group: THREE.Object3D = new THREE.Object3D();
+        const group: Object3D = new Object3D();
         group.add(circle);
         group.position.fromArray(position);
 
@@ -66,13 +72,13 @@ export class CircleMarker extends Marker {
     }
 
     protected _disposeGeometry(): void {
-        for (let mesh of <THREE.Mesh[]>this._geometry.children) {
+        for (let mesh of <Mesh[]>this._geometry.children) {
             mesh.geometry.dispose();
-            (<THREE.Material>mesh.material).dispose();
+            (<Material>mesh.material).dispose();
         }
     }
 
-    protected _getInteractiveObjects(): THREE.Object3D[] {
+    protected _getInteractiveObjects(): Object3D[] {
         return [];
     }
 }

@@ -1,3 +1,4 @@
+import { Vector3 } from "three";
 import {
     BehaviorSubject,
     Observable,
@@ -303,12 +304,12 @@ export class StateService {
                                 return frame.state.imagesAhead === 0;
                             }),
                         map(
-                            (frame: AnimationFrame): THREE.Vector3 => {
+                            (frame: AnimationFrame): Vector3 => {
                                 return frame.state.camera.position.clone();
                             }),
                         pairwise(),
                         map(
-                            (pair: [THREE.Vector3, THREE.Vector3]): boolean => {
+                            (pair: [Vector3, Vector3]): boolean => {
                                 return pair[0].distanceToSquared(pair[1]) !== 0;
                             }),
                         first(

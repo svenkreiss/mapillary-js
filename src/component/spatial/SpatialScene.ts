@@ -1,4 +1,21 @@
-import * as THREE from "three";
+import {
+    BufferAttribute,
+    BufferGeometry,
+    Camera,
+    Color,
+    Line,
+    LineBasicMaterial,
+    LineSegments,
+    Material,
+    Object3D,
+    PerspectiveCamera,
+    Points,
+    PointsMaterial,
+    Raycaster,
+    Scene,
+    Vector2,
+    WebGLRenderer,
+} from "three";
 import { PointContract } from "../../api/contracts/PointContract";
 import { ClusterContract }
     from "../../api/contracts/ClusterContract";
@@ -15,31 +32,31 @@ import { OriginalPositionMode } from "./OriginalPositionMode";
 type Clusters = {
     [id: string]: {
         tiles: string[];
-        points: THREE.Object3D;
+        points: Object3D;
     };
 }
 
-class CameraFrameLine extends THREE.Line {
+class CameraFrameLine extends Line {
     constructor(
-        readonly geometry: THREE.BufferGeometry,
-        readonly material: THREE.LineBasicMaterial,
+        readonly geometry: BufferGeometry,
+        readonly material: LineBasicMaterial,
         readonly frameOrigin: number[],
         readonly relativeFramePositions: number[][]) {
         super(geometry, material);
     }
 }
 
-class CameraFrameLineSegments extends THREE.LineSegments {
+class CameraFrameLineSegments extends LineSegments {
     constructor(
-        readonly geometry: THREE.BufferGeometry,
-        readonly material: THREE.LineBasicMaterial,
+        readonly geometry: BufferGeometry,
+        readonly material: LineBasicMaterial,
         readonly frameOrigin: number[],
         readonly relativeFramePositions: number[][]) {
         super(geometry, material);
     }
 }
 
-abstract class CameraFrameBase extends THREE.Object3D {
+abstract class CameraFrameBase extends Object3D {
     constructor(protected readonly _originalSize: number) {
         super();
     }
@@ -68,14 +85,14 @@ abstract class CameraFrameBase extends THREE.Object3D {
 
     protected _createBufferGeometry(
         positions: number[][])
-        : THREE.BufferGeometry {
+        : BufferGeometry {
         const positionAttribute =
-            new THREE.BufferAttribute(
+            new BufferAttribute(
                 new Float32Array(3 * positions.length), 3);
         const colorAttribute =
-            new THREE.BufferAttribute(
+            new BufferAttribute(
                 new Float32Array(3 * positions.length), 3);
-        const geometry = new THREE.BufferGeometry();
+        const geometry = new BufferGeometry();
         geometry.setAttribute("position", positionAttribute);
         geometry.setAttribute("color", colorAttribute);
         return geometry;
@@ -88,7 +105,7 @@ abstract class CameraFrameBase extends THREE.Object3D {
         color: string)
         : CameraFrameLine {
         const geometry = this._createBufferGeometry(relativePositions);
-        const material = new THREE.LineBasicMaterial({
+        const material = new LineBasicMaterial({
             vertexColors: true,
             fog: false,
         });
@@ -104,9 +121,9 @@ abstract class CameraFrameBase extends THREE.Object3D {
         frame: CameraFrameLine | CameraFrameLineSegments,
         color: string)
         : void {
-        const [r, g, b] = new THREE.Color(color).toArray();
+        const [r, g, b] = new Color(color).toArray();
         const colorAttribute =
-            <THREE.BufferAttribute>frame.geometry.attributes.color;
+            <BufferAttribute>frame.geometry.attributes.color;
         const colors = <Float32Array>colorAttribute.array;
 
         const length = colors.length;
@@ -120,7 +137,7 @@ abstract class CameraFrameBase extends THREE.Object3D {
         colorAttribute.needsUpdate = true;
     }
 
-    protected _updateMatrixWorld(object: THREE.Object3D): void {
+    protected _updateMatrixWorld(object: Object3D): void {
         object.matrixAutoUpdate = false;
         object.updateMatrixWorld(true);
         object.updateWorldMatrix(false, true);
@@ -131,7 +148,7 @@ abstract class CameraFrameBase extends THREE.Object3D {
         scale: number)
         : void {
         const positionAttribute =
-            <THREE.BufferAttribute>frame.geometry.attributes.position;
+            <BufferAttribute>frame.geometry.attributes.position;
         const positions = <Float32Array>positionAttribute.array;
 
         const originX = frame.frameOrigin[0];
@@ -249,7 +266,7 @@ class PerspectiveCameraFrame extends CameraFrameBase {
         : CameraFrameLineSegments {
         const positions = this._calculateRelativeDiagonals(transform, origin);
         const geometry = this._createBufferGeometry(positions);
-        const material = new THREE.LineBasicMaterial({
+        const material = new LineBasicMaterial({
             vertexColors: true,
             fog: false,
         });
@@ -430,7 +447,7 @@ class SphericalCameraFrame extends CameraFrameBase {
     }
 }
 
-class ClusterPoints extends THREE.Points {
+class ClusterPoints extends Points {
     constructor(
         private readonly _originalSize: number,
         reconstruction: ClusterContract,
@@ -441,13 +458,13 @@ class ClusterPoints extends THREE.Points {
         const [positions, colors] =
             this._getArrays(reconstruction, translation);
 
-        const geometry = new THREE.BufferGeometry();
+        const geometry = new BufferGeometry();
         geometry.setAttribute(
-            "position", new THREE.BufferAttribute(positions, 3));
+            "position", new BufferAttribute(positions, 3));
         geometry.setAttribute(
-            "color", new THREE.BufferAttribute(colors, 3));
+            "color", new BufferAttribute(colors, 3));
 
-        const material = new THREE.PointsMaterial({
+        const material = new PointsMaterial({
             size: scale * this._originalSize,
             vertexColors: true,
         });
@@ -458,11 +475,11 @@ class ClusterPoints extends THREE.Points {
 
     public dispose(): void {
         this.geometry.dispose();
-        (<THREE.PointsMaterial>this.material).dispose();
+        (<PointsMaterial>this.material).dispose();
     }
 
     public resize(scale: number): void {
-        const material = <THREE.PointsMaterial>this.material;
+        const material = <PointsMaterial>this.material;
         material.size = scale * this._originalSize;
         material.needsUpdate = true;
     }
@@ -501,19 +518,19 @@ class ClusterPoints extends THREE.Points {
     }
 }
 
-class TileLine extends THREE.Line {
+class TileLine extends Line {
     constructor(vertices: number[][]) {
         super();
         this.geometry = this._createGeometry(vertices);
-        this.material = new THREE.LineBasicMaterial();
+        this.material = new LineBasicMaterial();
     }
 
     public dispose(): void {
         this.geometry.dispose();
-        (<THREE.Material>this.material).dispose();
+        (<Material>this.material).dispose();
     }
 
-    private _createGeometry(vertices: number[][]): THREE.BufferGeometry {
+    private _createGeometry(vertices: number[][]): BufferGeometry {
         const polygon = vertices.slice()
         polygon.push(vertices[0]);
         const positions = new Float32Array(3 * (vertices.length + 1));
@@ -524,18 +541,18 @@ class TileLine extends THREE.Line {
             positions[index++] = vertex[2];
         }
 
-        const geometry = new THREE.BufferGeometry();
+        const geometry = new BufferGeometry();
         geometry.setAttribute(
             "position",
-            new THREE.BufferAttribute(positions, 3));
+            new BufferAttribute(positions, 3));
 
         return geometry;
     }
 }
 
-class PositionLine extends THREE.Line {
-    public geometry: THREE.BufferGeometry;
-    public material: THREE.LineBasicMaterial;
+class PositionLine extends Line {
+    public geometry: BufferGeometry;
+    public material: LineBasicMaterial;
 
     private _adjustedAltitude: number;
     private _originalAltitude: number;
@@ -554,7 +571,7 @@ class PositionLine extends THREE.Line {
             originalPosition,
             altitude);
         this.material =
-            new THREE.LineBasicMaterial({ color: new THREE.Color(1, 0, 0) });
+            new LineBasicMaterial({ color: new Color(1, 0, 0) });
     }
 
     public dispose(): void {
@@ -564,7 +581,7 @@ class PositionLine extends THREE.Line {
 
     public setMode(mode: OriginalPositionMode): void {
         const positionAttribute =
-            <THREE.BufferAttribute>this.geometry.attributes.position;
+            <BufferAttribute>this.geometry.attributes.position;
         const positions = <Float32Array>positionAttribute.array;
 
         positions[2] = this._getAltitude(mode);
@@ -577,7 +594,7 @@ class PositionLine extends THREE.Line {
         transform: Transform,
         originalPosition: number[],
         altitude: number)
-        : THREE.BufferGeometry {
+        : BufferGeometry {
         const vertices = [
             [
                 originalPosition[0],
@@ -594,10 +611,10 @@ class PositionLine extends THREE.Line {
             positions[index++] = vertex[2];
         }
 
-        const geometry = new THREE.BufferGeometry();
+        const geometry = new BufferGeometry();
         geometry.setAttribute(
             "position",
-            new THREE.BufferAttribute(positions, 3));
+            new BufferAttribute(positions, 3));
 
         return geometry;
     }
@@ -611,22 +628,22 @@ class PositionLine extends THREE.Line {
 
 class Intersection {
     private readonly _interactiveLayer: number;
-    private readonly _objects: THREE.Object3D[];
+    private readonly _objects: Object3D[];
     private readonly _objectImageMap: Map<string, string>;
-    private readonly _raycaster: THREE.Raycaster;
+    private readonly _raycaster: Raycaster;
 
     private readonly _lineThreshold: number;
     private readonly _largeLineThreshold: number;
 
-    constructor(raycaster?: THREE.Raycaster) {
+    constructor(raycaster?: Raycaster) {
         this._objects = [];
         this._objectImageMap = new Map();
-        this._raycaster = !!raycaster ? raycaster : new THREE.Raycaster();
+        this._raycaster = !!raycaster ? raycaster : new Raycaster();
 
         this._interactiveLayer = 1;
         this._raycaster = !!raycaster ?
             raycaster :
-            new THREE.Raycaster(
+            new Raycaster(
                 undefined,
                 undefined,
                 1,
@@ -640,10 +657,10 @@ class Intersection {
     }
 
     get interactiveLayer(): number { return this._interactiveLayer; }
-    get raycaster(): THREE.Raycaster { return this._raycaster; }
+    get raycaster(): Raycaster { return this._raycaster; }
 
     public add(
-        object: THREE.Object3D,
+        object: Object3D,
         imageId: string): void {
         const uuid = object.uuid
         this._objectImageMap.set(uuid, imageId);
@@ -652,9 +669,9 @@ class Intersection {
 
     public intersectObjects(
         viewport: number[],
-        camera: THREE.Camera): string {
+        camera: Camera): string {
         this._raycaster.setFromCamera(
-            new THREE.Vector2().fromArray(viewport),
+            new Vector2().fromArray(viewport),
             camera);
 
         const onMap = this._objectImageMap;
@@ -669,7 +686,7 @@ class Intersection {
         return null;
     }
 
-    public remove(object: THREE.Object3D): void {
+    public remove(object: Object3D): void {
         const objects = this._objects;
         const index = objects.indexOf(object);
         if (index !== -1) {
@@ -714,11 +731,11 @@ type ImageIdMap = {
 }
 
 class ImageCell {
-    public readonly cameras: THREE.Object3D;
+    public readonly cameras: Object3D;
     public readonly keys: string[];
     public clusterVisibles: { [key: string]: boolean };
 
-    private readonly _positions: THREE.Object3D;
+    private readonly _positions: Object3D;
     private readonly _positionLines: { [key: string]: PositionLine };
     private readonly _cameraFrames: { [key: string]: CameraFrameBase };
     private readonly _clusters: ColorIdCamerasMap;
@@ -733,13 +750,13 @@ class ImageCell {
 
     constructor(
         public readonly id: string,
-        private _scene: THREE.Scene,
+        private _scene: Scene,
         private _intersection: Intersection) {
 
-        this.cameras = new THREE.Object3D();
+        this.cameras = new Object3D();
         this.keys = [];
         this._positionLines = {};
-        this._positions = new THREE.Object3D();
+        this._positions = new Object3D();
 
         this._cameraFrames = {};
         this._clusters = new Map();
@@ -909,7 +926,7 @@ class ImageCell {
     }
 
     private _setCameraVisibility(
-        camera: THREE.Object3D,
+        camera: Object3D,
         visible: boolean,
         layer: number): void {
 
@@ -955,7 +972,7 @@ const NO_MERGE_ID = "NO_MERGE_ID";
 const NO_SEQUENCE_ID = "NO_SEQUENCE_ID";
 
 export class SpatialScene {
-    private _scene: THREE.Scene;
+    private _scene: Scene;
     private _intersection: Intersection;
     private _assets: SpatialAssets;
 
@@ -966,7 +983,7 @@ export class SpatialScene {
     };
     private _clusters: Clusters;
     private _images: { [cellId: string]: ImageCell };
-    private _tiles: { [cellId: string]: THREE.Object3D };
+    private _tiles: { [cellId: string]: Object3D };
 
     private _cameraVisualizationMode: CameraVisualizationMode;
     private _cameraSize: number;
@@ -990,14 +1007,14 @@ export class SpatialScene {
 
     constructor(
         configuration: SpatialConfiguration,
-        scene?: THREE.Scene) {
+        scene?: Scene) {
         this._rayNearScale = 1.1;
         this._originalPointSize = 2;
         this._originalCameraSize = 2;
 
         this._imageCellMap = new Map();
 
-        this._scene = !!scene ? scene : new THREE.Scene();
+        this._scene = !!scene ? scene : new Scene();
         this._intersection = new Intersection();
         this._assets = new SpatialAssets();
 
@@ -1041,7 +1058,7 @@ export class SpatialScene {
 
         if (!(clusterId in this._clusters)) {
             this._clusters[clusterId] = {
-                points: new THREE.Object3D(),
+                points: new Object3D(),
                 tiles: [],
             };
 
@@ -1133,7 +1150,7 @@ export class SpatialScene {
         }
 
         const tile = new TileLine(vertices);
-        this._tiles[cellId] = new THREE.Object3D();
+        this._tiles[cellId] = new Object3D();
         this._tiles[cellId].visible = this._tilesVisible;
         this._tiles[cellId].add(tile);
         this._scene.add(this._tiles[cellId]);
@@ -1334,8 +1351,8 @@ export class SpatialScene {
     }
 
     public render(
-        perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer): void {
+        perspectiveCamera: PerspectiveCamera,
+        renderer: WebGLRenderer): void {
         renderer.render(this._scene, perspectiveCamera);
 
         this._needsRender = false;
@@ -1420,7 +1437,7 @@ export class SpatialScene {
     }
 
     private _disposeTile(cellId: string): void {
-        const tile: THREE.Object3D = this._tiles[cellId];
+        const tile: Object3D = this._tiles[cellId];
 
         for (const line of tile.children.slice()) {
             (<TileLine>line).dispose();

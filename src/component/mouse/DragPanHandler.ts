@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import {
     empty as observableEmpty,
@@ -191,7 +191,7 @@ export class DragPanHandler extends HandlerBase<MouseConfiguration> {
 
                     let [canvasX, canvasY]: number[] = this._viewportCoords.canvasPosition(event, element);
 
-                    let currentDirection: THREE.Vector3 =
+                    let currentDirection: Vector3 =
                         this._viewportCoords.unprojectFromCanvas(
                             canvasX,
                             canvasY,
@@ -199,7 +199,7 @@ export class DragPanHandler extends HandlerBase<MouseConfiguration> {
                             render.perspective)
                             .sub(render.perspective.position);
 
-                    let directionX: THREE.Vector3 =
+                    let directionX: Vector3 =
                         this._viewportCoords.unprojectFromCanvas(
                             canvasX - movementX,
                             canvasY,
@@ -207,7 +207,7 @@ export class DragPanHandler extends HandlerBase<MouseConfiguration> {
                             render.perspective)
                             .sub(render.perspective.position);
 
-                    let directionY: THREE.Vector3 =
+                    let directionY: Vector3 =
                         this._viewportCoords.unprojectFromCanvas(
                             canvasX,
                             canvasY - movementY,

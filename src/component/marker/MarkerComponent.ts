@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import {
     combineLatest as observableCombineLatest,
@@ -733,7 +733,7 @@ export class MarkerComponent extends Component<MarkerConfiguration> {
                             element);
 
                     const direction =
-                        new THREE.Vector3(viewportX, viewportY, 1)
+                        new Vector3(viewportX, viewportY, 1)
                             .unproject(render.perspective)
                             .sub(render.perspective.position)
                             .normalize();

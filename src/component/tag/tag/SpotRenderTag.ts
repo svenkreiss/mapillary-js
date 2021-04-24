@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Camera, Object3D } from "three";
 import * as vd from "virtual-dom";
 
 import { TagOperation } from "../TagOperation";
@@ -19,7 +19,7 @@ import { ISpriteAtlas } from "../../../viewer/interfaces/ISpriteAtlas";
 export class SpotRenderTag extends RenderTag<SpotTag> {
     public dispose(): void { /* noop */ }
 
-    public getDOMObjects(atlas: ISpriteAtlas, camera: THREE.Camera, size: ViewportSize): vd.VNode[] {
+    public getDOMObjects(atlas: ISpriteAtlas, camera: Camera, size: ViewportSize): vd.VNode[] {
         const tag: SpotTag = this._tag;
         const container: { offsetHeight: number, offsetWidth: number } = {
             offsetHeight: size.height, offsetWidth: size.width,
@@ -100,9 +100,9 @@ export class SpotRenderTag extends RenderTag<SpotTag> {
         return vNodes;
     }
 
-    public getGLObjects(): THREE.Object3D[] { return []; }
+    public getGLObjects(): Object3D[] { return []; }
 
-    public getRetrievableObjects(): THREE.Object3D[] { return []; }
+    public getRetrievableObjects(): Object3D[] { return []; }
 
     private _colorToCss(color: number): string {
         return "#" + ("000000" + color.toString(16)).substr(-6);

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Quaternion, Vector3 } from "three";
 
 import { StateBase } from "./StateBase";
 import { EulerRotation } from "../interfaces/EulerRotation";
@@ -9,7 +9,7 @@ export class EarthState extends StateBase {
     constructor(state: IStateBase) {
         super(state);
 
-        const viewingDirection: THREE.Vector3 = this._camera.lookat
+        const viewingDirection: Vector3 = this._camera.lookat
             .clone()
             .sub(this._camera.position)
             .normalize();
@@ -23,7 +23,7 @@ export class EarthState extends StateBase {
 
     public dolly(delta: number): void {
         const camera: Camera = this._camera;
-        const offset: THREE.Vector3 = new THREE.Vector3()
+        const offset: Vector3 = new Vector3()
             .copy(camera.position)
             .sub(camera.lookat);
 
@@ -39,10 +39,10 @@ export class EarthState extends StateBase {
 
     public orbit(rotation: EulerRotation): void {
         const camera: Camera = this._camera;
-        const q: THREE.Quaternion = new THREE.Quaternion().setFromUnitVectors(camera.up, new THREE.Vector3(0, 0, 1));
-        const qInverse: THREE.Quaternion = q.clone().invert();
+        const q: Quaternion = new Quaternion().setFromUnitVectors(camera.up, new Vector3(0, 0, 1));
+        const qInverse: Quaternion = q.clone().invert();
 
-        const offset: THREE.Vector3 = new THREE.Vector3();
+        const offset: Vector3 = new Vector3();
         offset.copy(camera.position).sub(camera.lookat);
         offset.applyQuaternion(q);
         const length: number = offset.length();
@@ -63,8 +63,8 @@ export class EarthState extends StateBase {
     }
 
     public truck(direction: number[]): void {
-        this._camera.position.add(new THREE.Vector3().fromArray(direction));
-        this._camera.lookat.add(new THREE.Vector3().fromArray(direction));
+        this._camera.position.add(new Vector3().fromArray(direction));
+        this._camera.lookat.add(new Vector3().fromArray(direction));
     }
 
     public update(): void { /*noop*/ }

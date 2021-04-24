@@ -1,4 +1,10 @@
-import * as THREE from "three";
+import {
+    NearestFilter,
+    Object3D,
+    Sprite as ThreeSprite,
+    SpriteMaterial,
+    Texture,
+} from "three";
 import * as vd from "virtual-dom";
 
 import {
@@ -19,7 +25,7 @@ import { ISpriteAtlas } from "./interfaces/ISpriteAtlas";
 
 export class SpriteAtlas implements ISpriteAtlas {
     private _image: HTMLImageElement;
-    private _texture: THREE.Texture;
+    private _texture: Texture;
     private _json: Sprites;
 
     public set json(value: Sprites) {
@@ -28,15 +34,15 @@ export class SpriteAtlas implements ISpriteAtlas {
 
     public set image(value: HTMLImageElement) {
         this._image = value;
-        this._texture = new THREE.Texture(this._image);
-        this._texture.minFilter = THREE.NearestFilter;
+        this._texture = new Texture(this._image);
+        this._texture.minFilter = NearestFilter;
     }
 
     public get loaded(): boolean {
         return !!(this._image && this._json);
     }
 
-    public getGLSprite(name: string): THREE.Object3D {
+    public getGLSprite(name: string): Object3D {
         if (!this.loaded) {
             throw new Error("Sprites cannot be retrieved before the atlas is loaded.");
         }
@@ -46,10 +52,10 @@ export class SpriteAtlas implements ISpriteAtlas {
         if (!definition) {
             console.warn("Sprite with key" + name + "does not exist in sprite definition.");
 
-            return new THREE.Object3D();
+            return new Object3D();
         }
 
-        let texture: THREE.Texture = this._texture.clone();
+        let texture: Texture = this._texture.clone();
         texture.needsUpdate = true;
 
         let width: number = this._image.width;
@@ -60,9 +66,9 @@ export class SpriteAtlas implements ISpriteAtlas {
         texture.repeat.x = definition.width / width;
         texture.repeat.y = definition.height / height;
 
-        let material: THREE.SpriteMaterial = new THREE.SpriteMaterial({ map: texture });
+        let material: SpriteMaterial = new SpriteMaterial({ map: texture });
 
-        return new THREE.Sprite(material);
+        return new ThreeSprite(material);
     }
 
     public getDOMSprite(

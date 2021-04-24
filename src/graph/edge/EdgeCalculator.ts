@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import { EdgeCalculatorCoefficients } from "./EdgeCalculatorCoefficients";
 import { EdgeCalculatorDirections } from "./EdgeCalculatorDirections";
@@ -69,7 +69,7 @@ export class EdgeCalculator {
             return [];
         }
 
-        let currentDirection: THREE.Vector3 =
+        let currentDirection: Vector3 =
             this._spatial.viewingDirection(node.rotation);
         let currentVerticalDirection: number =
             this._spatial.angleToPlane(currentDirection.toArray(), [0, 0, 1]);
@@ -90,7 +90,7 @@ export class EdgeCalculator {
                 node.lngLat.lat,
                 node.computedAltitude);
 
-            let motion: THREE.Vector3 = new THREE.Vector3(enu[0], enu[1], enu[2]);
+            let motion: Vector3 = new Vector3(enu[0], enu[1], enu[2]);
             let distance: number = motion.length();
 
             if (distance > this._settings.maxDistance &&
@@ -106,7 +106,7 @@ export class EdgeCalculator {
 
             let verticalMotion: number = this._spatial.angleToPlane(motion.toArray(), [0, 0, 1]);
 
-            let direction: THREE.Vector3 =
+            let direction: Vector3 =
                 this._spatial.viewingDirection(potential.rotation);
 
             let directionChange: number = this._spatial.angleBetweenVector2(

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Color, PerspectiveCamera, WebGLRenderer } from "three";
 
 import {
     combineLatest as observableCombineLatest,
@@ -34,13 +34,13 @@ import { SubscriptionHolder } from "../util/SubscriptionHolder";
 
 interface GLRendererStatus {
     needsRender: boolean;
-    renderer: THREE.WebGLRenderer;
+    renderer: WebGLRenderer;
 }
 
 interface GLRenderCamera {
     frameId: number;
     needsRender: boolean;
-    perspective: THREE.PerspectiveCamera;
+    perspective: PerspectiveCamera;
 }
 
 interface GLRenderHashes {
@@ -100,7 +100,7 @@ export class GLRenderer {
 
     private _triggerOperation$: Subject<ForceRendererOperation> = new Subject<ForceRendererOperation>();
 
-    private _webGLRenderer$: Observable<THREE.WebGLRenderer>;
+    private _webGLRenderer$: Observable<WebGLRenderer>;
 
     private _renderFrameSubscription: Subscription;
     private _subscriptions: SubscriptionHolder = new SubscriptionHolder();
@@ -162,7 +162,7 @@ export class GLRenderer {
                 },
                 { needsRender: false }));
 
-        const clearColor = new THREE.Color(0x0F0F0F);
+        const clearColor = new Color(0x0F0F0F);
         const renderSubscription = observableCombineLatest(
             this._renderer$,
             this._renderCollection$,
@@ -290,10 +290,10 @@ export class GLRenderer {
         this._webGLRenderer$ = this._render$.pipe(
             first(),
             map(
-                (): THREE.WebGLRenderer => {
+                (): WebGLRenderer => {
                     canvasContainer.appendChild(canvas);
                     const element = renderService.element;
-                    const webGLRenderer = new THREE.WebGLRenderer({ canvas: canvas });
+                    const webGLRenderer = new WebGLRenderer({ canvas: canvas });
                     webGLRenderer.setPixelRatio(window.devicePixelRatio);
                     webGLRenderer.setSize(element.offsetWidth, element.offsetHeight);
                     webGLRenderer.autoClear = false;
@@ -309,7 +309,7 @@ export class GLRenderer {
         const createRenderer$ = this._webGLRenderer$.pipe(
             first(),
             map(
-                (webGLRenderer: THREE.WebGLRenderer): GLRendererOperation => {
+                (webGLRenderer: WebGLRenderer): GLRendererOperation => {
                     return (renderer: GLRendererStatus): GLRendererStatus => {
                         renderer.needsRender = true;
                         renderer.renderer = webGLRenderer;
@@ -393,7 +393,7 @@ export class GLRenderer {
         return this._opaqueRender$;
     }
 
-    public get webGLRenderer$(): Observable<THREE.WebGLRenderer> {
+    public get webGLRenderer$(): Observable<WebGLRenderer> {
         return this._webGLRenderer$;
     }
 

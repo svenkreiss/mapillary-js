@@ -1,4 +1,12 @@
-import * as THREE from "three";
+import {
+    BufferAttribute,
+    BufferGeometry,
+    Material,
+    Mesh,
+    MeshBasicMaterial,
+    Object3D,
+    SphereGeometry,
+} from "three";
 import { LngLat } from "../../../api/interfaces/LngLat";
 import { SimpleMarkerOptions } from "../interfaces/SimpleMarkerOptions";
 import { Marker } from "./Marker";
@@ -60,27 +68,27 @@ export class SimpleMarker extends Marker {
     protected _createGeometry(position: number[]): void {
         const radius = this._radius;
         const height = this._markerHeight(radius);
-        const markerMaterial = new THREE.MeshBasicMaterial({
+        const markerMaterial = new MeshBasicMaterial({
             color: this._color,
             opacity: this._opacity,
             transparent: true,
             depthWrite: false,
         });
 
-        const marker = new THREE.Mesh(
+        const marker = new Mesh(
             this._createMarkerGeometry(radius, 8, 8),
             markerMaterial);
 
-        const interactive = new THREE.Mesh(
-            new THREE.SphereGeometry(radius / 2, 8, 8),
-            new THREE.MeshBasicMaterial({
+        const interactive = new Mesh(
+            new SphereGeometry(radius / 2, 8, 8),
+            new MeshBasicMaterial({
                 color: this._ballColor,
                 opacity: this._ballOpacity,
                 transparent: true,
             }));
         interactive.position.z = height;
 
-        const group = new THREE.Object3D();
+        const group = new Object3D();
         group.add(interactive);
         group.add(marker);
         group.position.fromArray(position);
@@ -89,13 +97,13 @@ export class SimpleMarker extends Marker {
     }
 
     protected _disposeGeometry(): void {
-        for (const mesh of <THREE.Mesh[]>this._geometry.children) {
+        for (const mesh of <Mesh[]>this._geometry.children) {
             mesh.geometry.dispose();
-            (<THREE.Material>mesh.material).dispose();
+            (<Material>mesh.material).dispose();
         }
     }
 
-    protected _getInteractiveObjects(): THREE.Object3D[] {
+    protected _getInteractiveObjects(): Object3D[] {
         return this._interactive ? [this._geometry.children[0]] : [];
     }
 
@@ -107,7 +115,7 @@ export class SimpleMarker extends Marker {
     private _createMarkerGeometry(
         radius: number,
         widthSegments: number,
-        heightSegments: number): THREE.BufferGeometry {
+        heightSegments: number): BufferGeometry {
 
         const height = this._markerHeight(radius);
         const circleToRayAngle = this._circleToRayAngle;
@@ -157,10 +165,10 @@ export class SimpleMarker extends Marker {
             }
         }
 
-        const geometry = new THREE.BufferGeometry();
-        const positionAttribute = new THREE.BufferAttribute(positions, 3);
+        const geometry = new BufferGeometry();
+        const positionAttribute = new BufferAttribute(positions, 3);
         geometry.setAttribute("position", positionAttribute);
-        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry.setIndex(new BufferAttribute(indices, 1));
         return geometry;
     }
 }

@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import {
     Observable,
@@ -170,10 +170,10 @@ export class KeySpatialNavigationHandler extends HandlerBase<KeyboardConfigurati
     }
 
     private _rotationFromCamera(camera: Camera): EulerRotation {
-        let direction: THREE.Vector3 = camera.lookat.clone().sub(camera.position);
+        let direction: Vector3 = camera.lookat.clone().sub(camera.position);
 
         let upProjection: number = direction.clone().dot(camera.up);
-        let planeProjection: THREE.Vector3 = direction.clone().sub(camera.up.clone().multiplyScalar(upProjection));
+        let planeProjection: Vector3 = direction.clone().sub(camera.up.clone().multiplyScalar(upProjection));
 
         let phi: number = Math.atan2(planeProjection.y, planeProjection.x);
         let theta: number = Math.PI / 2 - this._spatial.angleToPlane(direction.toArray(), [0, 0, 1]);

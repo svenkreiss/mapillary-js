@@ -1,4 +1,12 @@
-import * as THREE from "three";
+import {
+    BufferAttribute,
+    BufferGeometry,
+    Camera,
+    Line,
+    LineBasicMaterial,
+    Material,
+    Object3D,
+} from "three";
 import * as vd from "virtual-dom";
 
 import {
@@ -24,7 +32,7 @@ export abstract class CreateTag<T extends Geometry> {
     protected _aborted$: Subject<CreateTag<T>>;
     protected _created$: Subject<CreateTag<T>>;
 
-    protected _glObjects: THREE.Object3D[];
+    protected _glObjects: Object3D[];
     protected _glObjectsChanged$: Subject<CreateTag<T>>;
 
     protected _geometryChangedSubscription: Subscription;
@@ -52,7 +60,7 @@ export abstract class CreateTag<T extends Geometry> {
         return this._geometry;
     }
 
-    public get glObjects(): THREE.Object3D[] {
+    public get glObjects(): Object3D[] {
         return this._glObjects;
     }
 
@@ -76,7 +84,7 @@ export abstract class CreateTag<T extends Geometry> {
                 }));
     }
 
-    public abstract getDOMObjects(camera: THREE.Camera, size: ViewportSize): vd.VNode[];
+    public abstract getDOMObjects(camera: Camera, size: ViewportSize): vd.VNode[];
 
     public abstract create(): void;
 
@@ -98,29 +106,29 @@ export abstract class CreateTag<T extends Geometry> {
         return "#" + ("000000" + color.toString(16)).substr(-6);
     }
 
-    protected _createOutine(polygon3d: number[][], color: number): THREE.Line {
+    protected _createOutine(polygon3d: number[][], color: number): Line {
         const positions: Float32Array = this._getLinePositions(polygon3d);
 
-        const geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        const geometry: BufferGeometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(positions, 3));
 
-        const material: THREE.LineBasicMaterial =
-            new THREE.LineBasicMaterial(
+        const material: LineBasicMaterial =
+            new LineBasicMaterial(
                 {
                     color: color,
                     linewidth: 1,
                 });
 
-        return new THREE.Line(geometry, material);
+        return new Line(geometry, material);
     }
 
-    protected _disposeLine(line: THREE.Line): void {
+    protected _disposeLine(line: Line): void {
         if (line == null) {
             return;
         }
 
         line.geometry.dispose();
-        (<THREE.Material>line.material).dispose();
+        (<Material>line.material).dispose();
     }
 
     private _getLinePositions(polygon3d: number[][]): Float32Array {

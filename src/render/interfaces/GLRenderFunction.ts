@@ -1,8 +1,8 @@
-import * as THREE from "three";
+import { PerspectiveCamera, WebGLRenderer } from "three";
 
 export interface GLRenderFunction extends Function {
     (
-        perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer,
+        perspectiveCamera: PerspectiveCamera,
+        renderer: WebGLRenderer,
     ): void;
 }

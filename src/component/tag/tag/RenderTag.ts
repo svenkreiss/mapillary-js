@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Camera, Object3D } from "three";
 import * as vd from "virtual-dom";
 
 import {
@@ -44,9 +44,9 @@ export abstract class RenderTag<T> {
 
     public abstract dispose(): void;
 
-    public abstract getDOMObjects(atlas: ISpriteAtlas, camera: THREE.Camera, size: ViewportSize): vd.VNode[];
+    public abstract getDOMObjects(atlas: ISpriteAtlas, camera: Camera, size: ViewportSize): vd.VNode[];
 
-    public abstract getGLObjects(): THREE.Object3D[];
+    public abstract getGLObjects(): Object3D[];
 
-    public abstract getRetrievableObjects(): THREE.Object3D[];
+    public abstract getRetrievableObjects(): Object3D[];
 }

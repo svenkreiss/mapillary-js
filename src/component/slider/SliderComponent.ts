@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3, WebGLRenderer } from "three";
 
 import {
     combineLatest as observableCombineLatest,
@@ -408,7 +408,7 @@ export class SliderComponent extends Component<SliderConfiguration> {
                     this._container.glRenderer.webGLRenderer$,
                     this._container.renderService.size$),
                 map(
-                    ([frame, renderer, size]: [AnimationFrame, THREE.WebGLRenderer, ViewportSize]): TextureProvider => {
+                    ([frame, renderer, size]: [AnimationFrame, WebGLRenderer, ViewportSize]): TextureProvider => {
                         const state: IAnimationState = frame.state;
                         const viewportSize: number = Math.max(size.width, size.height);
 
@@ -542,7 +542,7 @@ export class SliderComponent extends Component<SliderConfiguration> {
                 this._container.glRenderer.webGLRenderer$,
                 this._container.renderService.size$),
             map(
-                ([frame, renderer, size]: [AnimationFrame, THREE.WebGLRenderer, ViewportSize]): TextureProvider => {
+                ([frame, renderer, size]: [AnimationFrame, WebGLRenderer, ViewportSize]): TextureProvider => {
                     const state = frame.state;
                     const previousImage = state.previousImage;
                     const previousTransform = state.previousTransform;
@@ -646,9 +646,9 @@ export class SliderComponent extends Component<SliderConfiguration> {
 
                     if (isSpherical(frame.state.previousImage.cameraType)) {
                         if (isSpherical(frame.state.currentImage.cameraType)) {
-                            const currentViewingDirection: THREE.Vector3 =
+                            const currentViewingDirection: Vector3 =
                                 this._spatial.viewingDirection(frame.state.currentImage.rotation);
-                            const previousViewingDirection: THREE.Vector3 =
+                            const previousViewingDirection: Vector3 =
                                 this._spatial.viewingDirection(frame.state.previousImage.rotation);
 
                             const directionDiff: number = this._spatial.angleBetweenVector2(
@@ -672,9 +672,9 @@ export class SliderComponent extends Component<SliderConfiguration> {
                                 pixelWidth: roi.pixelWidth,
                             };
                         } else {
-                            const currentViewingDirection: THREE.Vector3 =
+                            const currentViewingDirection: Vector3 =
                                 this._spatial.viewingDirection(frame.state.currentImage.rotation);
-                            const previousViewingDirection: THREE.Vector3 =
+                            const previousViewingDirection: Vector3 =
                                 this._spatial.viewingDirection(frame.state.previousImage.rotation);
 
                             const directionDiff: number = this._spatial.angleBetweenVector2(

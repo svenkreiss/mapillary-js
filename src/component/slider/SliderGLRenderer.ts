@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Mesh, PerspectiveCamera, Texture, WebGLRenderer } from "three";
 import { Subscription } from "rxjs";
 
 import { Spatial } from "../../geo/Spatial";
@@ -102,7 +102,7 @@ export class SliderGLRenderer {
         imageElement: HTMLImageElement,
         image: Image)
         : void {
-        const planes: { [key: string]: THREE.Mesh } =
+        const planes: { [key: string]: Mesh } =
             image.id === this._currentKey ?
                 this._scene.planes :
                 image.id === this._previousKey ?
@@ -120,9 +120,9 @@ export class SliderGLRenderer {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             let material: ProjectorShaderMaterial = <ProjectorShaderMaterial>plane.material;
-            let texture: THREE.Texture = <THREE.Texture>material.uniforms.projectorTex.value;
+            let texture: Texture = <Texture>material.uniforms.projectorTex.value;
 
             texture.image = imageElement;
             texture.needsUpdate = true;
@@ -139,16 +139,16 @@ export class SliderGLRenderer {
 
         this._needsRender = true;
 
-        const planes: { [key: string]: THREE.Mesh } = this._scene.planes;
+        const planes: { [key: string]: Mesh } = this._scene.planes;
 
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             let material: ProjectorShaderMaterial = <ProjectorShaderMaterial>plane.material;
-            let texture: THREE.Texture = <THREE.Texture>material.uniforms.projectorTex.value;
+            let texture: Texture = <Texture>material.uniforms.projectorTex.value;
 
             texture.image = imageElement;
             texture.needsUpdate = true;
@@ -156,8 +156,8 @@ export class SliderGLRenderer {
     }
 
     public render(
-        perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer): void {
+        perspectiveCamera: PerspectiveCamera,
+        renderer: WebGLRenderer): void {
 
         if (!this.disabled) {
             renderer.render(this._scene.sceneOld, perspectiveCamera);
@@ -218,7 +218,7 @@ export class SliderGLRenderer {
         originalKey: string,
         provider: TextureProvider,
         providerDisposers: { [key: string]: () => void },
-        updateTexture: (texture: THREE.Texture) => void): void {
+        updateTexture: (texture: Texture) => void): void {
 
         if (key !== originalKey) {
             return;
@@ -250,14 +250,14 @@ export class SliderGLRenderer {
     }
 
     private _updateCurtain(): void {
-        const planes: { [key: string]: THREE.Mesh } = this._scene.planes;
+        const planes: { [key: string]: Mesh } = this._scene.planes;
 
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             let shaderMaterial = <BBoxProjectorShaderMaterial>plane.material;
 
             if (!!shaderMaterial.uniforms.curtain) {
@@ -347,7 +347,7 @@ export class SliderGLRenderer {
                     state.currentImage.cameraParameters,
                     <CameraType>state.currentImage.cameraType);
 
-                let mesh: THREE.Mesh = undefined;
+                let mesh: Mesh = undefined;
 
                 if (isSpherical(previousNode.cameraType)) {
                     mesh = this._factory.createMesh(
@@ -371,7 +371,7 @@ export class SliderGLRenderer {
                     }
                 }
 
-                const previousPlanes: { [key: string]: THREE.Mesh } = {};
+                const previousPlanes: { [key: string]: Mesh } = {};
                 previousPlanes[previousNode.id] = mesh;
                 this._scene.setImagePlanesOld(previousPlanes);
             }
@@ -386,7 +386,7 @@ export class SliderGLRenderer {
 
             this._currentKey = state.currentImage.id;
 
-            const planes: { [key: string]: THREE.Mesh } = {};
+            const planes: { [key: string]: Mesh } = {};
 
             if (isSpherical(state.currentImage.cameraType)) {
                 planes[state.currentImage.id] =
@@ -407,20 +407,20 @@ export class SliderGLRenderer {
         }
     }
 
-    private _updateTexture(texture: THREE.Texture): void {
+    private _updateTexture(texture: Texture): void {
         this._needsRender = true;
 
-        const planes: { [key: string]: THREE.Mesh } = this._scene.planes;
+        const planes: { [key: string]: Mesh } = this._scene.planes;
 
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             let material: ProjectorShaderMaterial = <ProjectorShaderMaterial>plane.material;
 
-            let oldTexture: THREE.Texture = <THREE.Texture>material.uniforms.projectorTex.value;
+            let oldTexture: Texture = <Texture>material.uniforms.projectorTex.value;
             material.uniforms.projectorTex.value = null;
             oldTexture.dispose();
 
@@ -428,20 +428,20 @@ export class SliderGLRenderer {
         }
     }
 
-    private _updateTexturePrev(texture: THREE.Texture): void {
+    private _updateTexturePrev(texture: Texture): void {
         this._needsRender = true;
 
-        const planes: { [key: string]: THREE.Mesh } = this._scene.planesOld;
+        const planes: { [key: string]: Mesh } = this._scene.planesOld;
 
         for (const key in planes) {
             if (!planes.hasOwnProperty(key)) {
                 continue;
             }
 
-            const plane: THREE.Mesh = planes[key];
+            const plane: Mesh = planes[key];
             let material: ProjectorShaderMaterial = <ProjectorShaderMaterial>plane.material;
 
-            let oldTexture: THREE.Texture = <THREE.Texture>material.uniforms.projectorTex.value;
+            let oldTexture: Texture = <Texture>material.uniforms.projectorTex.value;
             material.uniforms.projectorTex.value = null;
             oldTexture.dispose();
 

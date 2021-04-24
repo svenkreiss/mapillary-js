@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 import { isSpherical } from "./Geo";
 
 import { Transform } from "./Transform";
@@ -9,9 +9,9 @@ import { Transform } from "./Transform";
  * @classdesc Holds information about a camera.
  */
 export class Camera {
-    private _position: THREE.Vector3;
-    private _lookat: THREE.Vector3;
-    private _up: THREE.Vector3;
+    private _position: Vector3;
+    private _lookat: Vector3;
+    private _up: Vector3;
     private _focal: number;
 
     /**
@@ -20,39 +20,39 @@ export class Camera {
      */
     constructor(transform?: Transform) {
         if (transform != null) {
-            this._position = new THREE.Vector3().fromArray(transform.unprojectSfM([0, 0], 0));
-            this._lookat = new THREE.Vector3().fromArray(transform.unprojectSfM([0, 0], 10));
+            this._position = new Vector3().fromArray(transform.unprojectSfM([0, 0], 0));
+            this._lookat = new Vector3().fromArray(transform.unprojectSfM([0, 0], 10));
             this._up = transform.upVector();
             this._focal = this._getFocal(transform);
         } else {
-            this._position = new THREE.Vector3(0, 0, 0);
-            this._lookat = new THREE.Vector3(0, 0, 1);
-            this._up = new THREE.Vector3(0, -1, 0);
+            this._position = new Vector3(0, 0, 0);
+            this._lookat = new Vector3(0, 0, 1);
+            this._up = new Vector3(0, -1, 0);
             this._focal = 1;
         }
     }
 
     /**
      * Get position.
-     * @returns {THREE.Vector3} The position vector.
+     * @returns {Vector3} The position vector.
      */
-    public get position(): THREE.Vector3 {
+    public get position(): Vector3 {
         return this._position;
     }
 
     /**
      * Get lookat.
-     * @returns {THREE.Vector3} The lookat vector.
+     * @returns {Vector3} The lookat vector.
      */
-    public get lookat(): THREE.Vector3 {
+    public get lookat(): Vector3 {
         return this._lookat;
     }
 
     /**
      * Get up.
-     * @returns {THREE.Vector3} The up vector.
+     * @returns {Vector3} The up vector.
      */
-    public get up(): THREE.Vector3 {
+    public get up(): Vector3 {
         return this._up;
     }
 

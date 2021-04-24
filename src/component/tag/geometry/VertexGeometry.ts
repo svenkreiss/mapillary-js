@@ -1,7 +1,7 @@
 import earcut from "earcut";
 import polylabel from "polylabel";
 import * as martinez from "martinez-polygon-clipping";
-import * as THREE from "three";
+import { Camera, Vector3 } from "three";
 
 import { Geometry } from "./Geometry";
 import { Transform } from "../../../geo/Transform";
@@ -137,7 +137,7 @@ export abstract class VertexGeometry extends Geometry {
     }
 
     protected _project(points2d: number[][], transform: Transform): number[][] {
-        const camera: THREE.Camera = this._createCamera(
+        const camera: Camera = this._createCamera(
             transform.upVector().toArray(),
             transform.unprojectSfM([0, 0], 0),
             transform.unprojectSfM([0, 0], 10));
@@ -267,24 +267,24 @@ export abstract class VertexGeometry extends Geometry {
                 });
     }
 
-    private _createCamera(upVector: number[], position: number[], lookAt: number[]): THREE.Camera {
-        const camera: THREE.Camera = new THREE.Camera();
-        camera.up.copy(new THREE.Vector3().fromArray(upVector));
-        camera.position.copy(new THREE.Vector3().fromArray(position));
-        camera.lookAt(new THREE.Vector3().fromArray(lookAt));
+    private _createCamera(upVector: number[], position: number[], lookAt: number[]): Camera {
+        const camera: Camera = new Camera();
+        camera.up.copy(new Vector3().fromArray(upVector));
+        camera.position.copy(new Vector3().fromArray(position));
+        camera.lookAt(new Vector3().fromArray(lookAt));
         camera.updateMatrix();
         camera.updateMatrixWorld(true);
 
         return camera;
     }
 
-    private _deunproject(points2d: number[][], transform: Transform, camera: THREE.Camera): number[][] {
+    private _deunproject(points2d: number[][], transform: Transform, camera: Camera): number[][] {
         return points2d
             .map(
                 (point2d: number[]): number[] => {
                     const pointWorld: number[] = transform.unprojectBasic(point2d, 10000);
-                    const pointCamera: THREE.Vector3 =
-                        new THREE.Vector3(pointWorld[0], pointWorld[1], pointWorld[2])
+                    const pointCamera: Vector3 =
+                        new Vector3(pointWorld[0], pointWorld[1], pointWorld[2])
                             .applyMatrix4(camera.matrixWorldInverse);
 
                     return [pointCamera.x / pointCamera.z, pointCamera.y / pointCamera.z];
@@ -305,7 +305,7 @@ export abstract class VertexGeometry extends Geometry {
 
         const triangles: number[] = [];
         const threshold: number = this._subsampleThreshold;
-        const camera: THREE.Camera = this._createCamera(
+        const camera: Camera = this._createCamera(
             transform.upVector().toArray(),
             transform.unprojectSfM([0, 0], 0),
             transform.unprojectBasic(lookat2d, 10));

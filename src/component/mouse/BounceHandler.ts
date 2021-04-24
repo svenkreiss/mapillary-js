@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3 } from "three";
 
 import {
     empty as observableEmpty,
@@ -112,15 +112,15 @@ export class BounceHandler extends HandlerBase<MouseConfiguration> {
                     const horizontalDistance: number = distances[1] - distances[3];
                     const verticalDistance: number = distances[0] - distances[2];
 
-                    const currentDirection: THREE.Vector3 = this._viewportCoords
+                    const currentDirection: Vector3 = this._viewportCoords
                         .unprojectFromViewport(0, 0, render.perspective)
                         .sub(render.perspective.position);
 
-                    const directionPhi: THREE.Vector3 = this._viewportCoords
+                    const directionPhi: Vector3 = this._viewportCoords
                         .unprojectFromViewport(horizontalDistance, 0, render.perspective)
                         .sub(render.perspective.position);
 
-                    const directionTheta: THREE.Vector3 = this._viewportCoords
+                    const directionTheta: Vector3 = this._viewportCoords
                         .unprojectFromViewport(0, verticalDistance, render.perspective)
                         .sub(render.perspective.position);
 

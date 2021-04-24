@@ -1,9 +1,10 @@
 import dts from 'rollup-plugin-dts';
 import { terser } from 'rollup-plugin-terser';
 import {
-    esm,
+    esmOutput,
     srcInput as input,
     plugins,
+    treeshake,
     umdOutput,
 } from './config/rollup.js';
 
@@ -16,13 +17,21 @@ const minifiedOutput = Object.assign(
     umdOutput);
 
 const bundles = [
-    esm,
+    {
+        input,
+        output: [
+            esmOutput
+        ],
+        plugins,
+        treeshake,
+    },
     {
         input,
         output: [
             unminifiedOutput
         ],
         plugins,
+        treeshake,
     },
     {
         input,
@@ -33,6 +42,7 @@ const bundles = [
             ...plugins,
             terser(),
         ],
+        treeshake,
     },
     {
         input: 'build/esm/src/mapillary.d.ts',

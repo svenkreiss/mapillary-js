@@ -1,4 +1,15 @@
-import * as THREE from "three";
+import {
+    BufferAttribute,
+    BufferGeometry,
+    Camera,
+    DoubleSide,
+    Line,
+    LineBasicMaterial,
+    Material,
+    Mesh,
+    MeshBasicMaterial,
+    Object3D,
+} from "three";
 import * as vd from "virtual-dom";
 
 import { Subscription } from "rxjs";
@@ -14,8 +25,8 @@ import { ViewportSize } from "../../../render/interfaces/ViewportSize";
 import { ISpriteAtlas } from "../../../viewer/interfaces/ISpriteAtlas";
 
 export abstract class OutlineRenderTagBase<T extends Tag> extends RenderTag<T> {
-    protected _fill: THREE.Mesh;
-    protected _outline: THREE.Line;
+    protected _fill: Mesh;
+    protected _outline: Line;
 
     private _changedSubscription: Subscription;
     private _geometryChangedSubscription: Subscription;
@@ -45,11 +56,11 @@ export abstract class OutlineRenderTagBase<T extends Tag> extends RenderTag<T> {
         this._geometryChangedSubscription.unsubscribe();
     }
 
-    public abstract getDOMObjects(atlas: ISpriteAtlas, camera: THREE.Camera, size: ViewportSize): vd.VNode[];
+    public abstract getDOMObjects(atlas: ISpriteAtlas, camera: Camera, size: ViewportSize): vd.VNode[];
 
-    public abstract getGLObjects(): THREE.Object3D[];
+    public abstract getGLObjects(): Object3D[];
 
-    public abstract getRetrievableObjects(): THREE.Object3D[];
+    public abstract getRetrievableObjects(): Object3D[];
 
     protected abstract _getPoints3d(): number[][];
 
@@ -59,47 +70,47 @@ export abstract class OutlineRenderTagBase<T extends Tag> extends RenderTag<T> {
 
     protected abstract _onTagChanged(): boolean;
 
-    protected abstract _updateLineBasicMaterial(material: THREE.LineBasicMaterial): void;
+    protected abstract _updateLineBasicMaterial(material: LineBasicMaterial): void;
 
-    protected abstract _updateFillMaterial(material: THREE.MeshBasicMaterial): void;
+    protected abstract _updateFillMaterial(material: MeshBasicMaterial): void;
 
     protected _colorToCss(color: number): string {
         return "#" + ("000000" + color.toString(16)).substr(-6);
     }
 
-    protected _createFill(): THREE.Mesh {
+    protected _createFill(): Mesh {
         let triangles: number[] = this._getTriangles();
         let positions: Float32Array = new Float32Array(triangles);
 
-        let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        let geometry: BufferGeometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(positions, 3));
         geometry.computeBoundingSphere();
 
-        let material: THREE.MeshBasicMaterial =
-            new THREE.MeshBasicMaterial({ side: THREE.DoubleSide, transparent: true });
+        let material: MeshBasicMaterial =
+            new MeshBasicMaterial({ side: DoubleSide, transparent: true });
 
         this._updateFillMaterial(material);
 
-        return new THREE.Mesh(geometry, material);
+        return new Mesh(geometry, material);
     }
 
-    protected _createLine(points3d: number[][]): THREE.Line {
+    protected _createLine(points3d: number[][]): Line {
         let positions: Float32Array = this._getLinePositions(points3d);
 
-        let geometry: THREE.BufferGeometry = new THREE.BufferGeometry();
-        geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+        let geometry: BufferGeometry = new BufferGeometry();
+        geometry.setAttribute("position", new BufferAttribute(positions, 3));
         geometry.computeBoundingSphere();
 
-        let material: THREE.LineBasicMaterial = new THREE.LineBasicMaterial();
+        let material: LineBasicMaterial = new LineBasicMaterial();
         this._updateLineBasicMaterial(material);
 
-        const line: THREE.Line = new THREE.Line(geometry, material);
+        const line: Line = new Line(geometry, material);
         line.renderOrder = 1;
 
         return line;
     }
 
-    protected _createOutline(): THREE.Line {
+    protected _createOutline(): Line {
         return this._createLine(this._getPoints3d());
     }
 
@@ -109,7 +120,7 @@ export abstract class OutlineRenderTagBase<T extends Tag> extends RenderTag<T> {
         }
 
         this._fill.geometry.dispose();
-        (<THREE.Material>this._fill.material).dispose();
+        (<Material>this._fill.material).dispose();
         this._fill = null;
     }
 
@@ -119,7 +130,7 @@ export abstract class OutlineRenderTagBase<T extends Tag> extends RenderTag<T> {
         }
 
         this._outline.geometry.dispose();
-        (<THREE.Material>this._outline.material).dispose();
+        (<Material>this._outline.material).dispose();
         this._outline = null;
     }
 
@@ -159,25 +170,25 @@ export abstract class OutlineRenderTagBase<T extends Tag> extends RenderTag<T> {
         let triangles: number[] = this._getTriangles();
         let positions: Float32Array = new Float32Array(triangles);
 
-        let geometry: THREE.BufferGeometry = <THREE.BufferGeometry>this._fill.geometry;
-        let attribute: THREE.BufferAttribute = <THREE.BufferAttribute>geometry.getAttribute("position");
+        let geometry: BufferGeometry = <BufferGeometry>this._fill.geometry;
+        let attribute: BufferAttribute = <BufferAttribute>geometry.getAttribute("position");
 
         if (attribute.array.length === positions.length) {
             attribute.set(positions);
             attribute.needsUpdate = true;
         } else {
             geometry.removeAttribute("position");
-            geometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute("position", new BufferAttribute(positions, 3));
         }
 
         geometry.computeBoundingSphere();
     }
 
-    protected _updateLine(line: THREE.Line, points3d: number[][]): void {
+    protected _updateLine(line: Line, points3d: number[][]): void {
         let positions: Float32Array = this._getLinePositions(points3d);
 
-        let geometry: THREE.BufferGeometry = <THREE.BufferGeometry>line.geometry;
-        let attribute: THREE.BufferAttribute = <THREE.BufferAttribute>geometry.getAttribute("position");
+        let geometry: BufferGeometry = <BufferGeometry>line.geometry;
+        let attribute: BufferAttribute = <BufferAttribute>geometry.getAttribute("position");
 
         attribute.set(positions);
         attribute.needsUpdate = true;

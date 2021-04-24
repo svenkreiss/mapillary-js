@@ -1,5 +1,5 @@
 import * as vd from "virtual-dom";
-import * as THREE from "three";
+import { Camera, Line } from "three";
 
 import { CreateTag } from "./CreateTag";
 
@@ -14,7 +14,7 @@ import { ViewportSize } from "../../../render/interfaces/ViewportSize";
 export class ExtremePointCreateTag extends CreateTag<PointsGeometry> {
     private _rectGeometry: RectGeometry;
     private _options: ExtremePointCreateTagOptions;
-    private _outline: THREE.Line;
+    private _outline: Line;
 
     constructor(
         geometry: PointsGeometry,
@@ -47,7 +47,7 @@ export class ExtremePointCreateTag extends CreateTag<PointsGeometry> {
         this._disposeObjects();
     }
 
-    public getDOMObjects(camera: THREE.Camera, size: ViewportSize): vd.VNode[] {
+    public getDOMObjects(camera: Camera, size: ViewportSize): vd.VNode[] {
         const container: { offsetHeight: number, offsetWidth: number } = {
             offsetHeight: size.height, offsetWidth: size.width,
         };

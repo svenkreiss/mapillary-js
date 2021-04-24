@@ -1,4 +1,16 @@
-import * as THREE from "three";
+import {
+    FrontSide,
+    LinearFilter,
+    Mesh,
+    MeshBasicMaterial,
+    OrthographicCamera,
+    PlaneGeometry,
+    RGBFormat,
+    Scene,
+    Texture,
+    WebGLRenderer,
+    WebGLRenderTarget,
+} from "three";
 import {
     publishReplay,
     refCount,
@@ -48,8 +60,8 @@ export class TextureProvider {
     private readonly _renderedLevel: Set<string>;
     private readonly _rendered: Map<string, TileCoords3D>;
 
-    private readonly _created$: Observable<THREE.Texture>;
-    private readonly _createdSubject$: Subject<THREE.Texture>;
+    private readonly _created$: Observable<Texture>;
+    private readonly _createdSubject$: Subject<Texture>;
     private readonly _hasSubject$: Subject<boolean>;
     private readonly _has$: Observable<boolean>;
     private readonly _updated$: Subject<boolean>;
@@ -59,10 +71,10 @@ export class TextureProvider {
     private readonly _imageId: string;
     private readonly _level: TileLevel;
 
-    private _renderer: THREE.WebGLRenderer;
+    private _renderer: WebGLRenderer;
     private _render: {
-        camera: THREE.OrthographicCamera;
-        target: THREE.WebGLRenderTarget;
+        camera: OrthographicCamera;
+        target: WebGLRenderTarget;
     };
 
     private _background: HTMLImageElement;
@@ -79,7 +91,7 @@ export class TextureProvider {
      * @param {HTMLImageElement} background - Image to use as background.
      * @param {TileLoader} loader - Loader for retrieving tiles.
      * @param {TileStore} store - Store for saving tiles.
-     * @param {THREE.WebGLRenderer} renderer - Renderer used for rendering tiles to texture.
+     * @param {WebGLRenderer} renderer - Renderer used for rendering tiles to texture.
      */
     constructor(
         imageId: string,
@@ -88,7 +100,7 @@ export class TextureProvider {
         background: HTMLImageElement,
         loader: TileLoader,
         store: TileStore,
-        renderer: THREE.WebGLRenderer) {
+        renderer: WebGLRenderer) {
 
         const size = { h: height, w: width };
         if (!verifySize(size)) {
@@ -106,7 +118,7 @@ export class TextureProvider {
 
         this._holder = new SubscriptionHolder();
         this._updated$ = new Subject<boolean>();
-        this._createdSubject$ = new Subject<THREE.Texture>();
+        this._createdSubject$ = new Subject<Texture>();
         this._created$ = this._createdSubject$
             .pipe(
                 publishReplay(1),
@@ -182,7 +194,7 @@ export class TextureProvider {
      * @returns {Observable<boolean>} Observable emitting
      * values when a new texture has been created.
      */
-    public get textureCreated$(): Observable<THREE.Texture> {
+    public get textureCreated$(): Observable<Texture> {
         return this._created$;
     }
 
@@ -396,7 +408,7 @@ export class TextureProvider {
         const near = -1;
         const far = 1;
         const camera =
-            new THREE.OrthographicCamera(-dx, dx, dy, -dy, near, far);
+            new OrthographicCamera(-dx, dx, dy, -dy, near, far);
         camera.position.z = 1;
         const gl = this._renderer.getContext();
         const maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
@@ -407,14 +419,14 @@ export class TextureProvider {
         const targetWidth = Math.floor(scale * this._size.w);
         const targetHeight = Math.floor(scale * this._size.h);
 
-        const target = new THREE.WebGLRenderTarget(
+        const target = new WebGLRenderTarget(
             targetWidth,
             targetHeight,
             {
                 depthBuffer: false,
-                format: THREE.RGBFormat,
-                magFilter: THREE.LinearFilter,
-                minFilter: THREE.LinearFilter,
+                format: RGBFormat,
+                magFilter: LinearFilter,
+                minFilter: LinearFilter,
                 stencilBuffer: false,
             });
 
@@ -480,21 +492,21 @@ export class TextureProvider {
     private _renderToTarget(
         pixel: TilePixelCoords2D,
         image: HTMLImageElement): void {
-        const texture = new THREE.Texture(image);
-        texture.minFilter = THREE.LinearFilter;
+        const texture = new Texture(image);
+        texture.minFilter = LinearFilter;
         texture.needsUpdate = true;
 
-        const geometry = new THREE.PlaneGeometry(pixel.w, pixel.h);
-        const material = new THREE.MeshBasicMaterial({
+        const geometry = new PlaneGeometry(pixel.w, pixel.h);
+        const material = new MeshBasicMaterial({
             map: texture,
-            side: THREE.FrontSide,
+            side: FrontSide,
         });
 
-        const mesh = new THREE.Mesh(geometry, material);
+        const mesh = new Mesh(geometry, material);
         mesh.position.x = -this._size.w / 2 + pixel.x + pixel.w / 2;
         mesh.position.y = this._size.h / 2 - pixel.y - pixel.h / 2;
 
-        const scene = new THREE.Scene();
+        const scene = new Scene();
         scene.add(mesh);
 
         const target = this._renderer.getRenderTarget();

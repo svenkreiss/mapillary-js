@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { PerspectiveCamera, Vector3 } from "three";
 
 import * as Geo from "../geo/Geo";
 
@@ -25,7 +25,7 @@ export class RenderCamera {
     private _frameId: number;
 
     private _camera: Camera;
-    private _perspective: THREE.PerspectiveCamera;
+    private _perspective: PerspectiveCamera;
 
     private _rotation: EulerRotation;
 
@@ -79,7 +79,7 @@ export class RenderCamera {
 
         this._camera = new Camera();
 
-        this._perspective = new THREE.PerspectiveCamera(
+        this._perspective = new PerspectiveCamera(
             this._initialFov,
             this._computeAspect(elementWidth, elementHeight),
             0.16,
@@ -106,7 +106,7 @@ export class RenderCamera {
         return this._frameId;
     }
 
-    public get perspective(): THREE.PerspectiveCamera {
+    public get perspective(): PerspectiveCamera {
         return this._perspective;
     }
 
@@ -301,8 +301,8 @@ export class RenderCamera {
     }
 
     private _computeRotation(camera: Camera): EulerRotation {
-        let direction: THREE.Vector3 = camera.lookat.clone().sub(camera.position);
-        let up: THREE.Vector3 = camera.up.clone();
+        let direction: Vector3 = camera.lookat.clone().sub(camera.position);
+        let up: Vector3 = camera.up.clone();
 
         let phi: number = this._spatial.azimuthal(direction.toArray(), up.toArray());
         let theta: number = Math.PI / 2 - this._spatial.angleToPlane(direction.toArray(), [0, 0, 1]);

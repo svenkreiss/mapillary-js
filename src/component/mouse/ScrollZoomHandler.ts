@@ -89,7 +89,7 @@ export class ScrollZoomHandler extends HandlerBase<MouseConfiguration> {
 
                     let [canvasX, canvasY]: number[] = this._viewportCoords.canvasPosition(event, element);
 
-                    let unprojected: THREE.Vector3 =
+                    let unprojected =
                         this._viewportCoords.unprojectFromCanvas(
                             canvasX,
                             canvasY,

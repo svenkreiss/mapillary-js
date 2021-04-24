@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Object3D } from "three";
 import { LngLat } from "../../../api/interfaces/LngLat";
 
 /**
@@ -9,7 +9,7 @@ import { LngLat } from "../../../api/interfaces/LngLat";
  */
 export abstract class Marker {
     protected _id: string;
-    protected _geometry: THREE.Object3D;
+    protected _geometry: Object3D;
     protected _lngLat: LngLat;
 
     constructor(id: string, lngLat: LngLat) {
@@ -30,7 +30,7 @@ export abstract class Marker {
      *
      * @ignore
      */
-    public get geometry(): THREE.Object3D {
+    public get geometry(): Object3D {
         return this._geometry;
     }
 
@@ -66,7 +66,7 @@ export abstract class Marker {
     }
 
     /** @ignore */
-    public getInteractiveObjects(): THREE.Object3D[] {
+    public getInteractiveObjects(): Object3D[] {
         if (!this._geometry) {
             return [];
         }
@@ -103,5 +103,5 @@ export abstract class Marker {
 
     protected abstract _disposeGeometry(): void;
 
-    protected abstract _getInteractiveObjects(): THREE.Object3D[];
+    protected abstract _getInteractiveObjects(): Object3D[];
 }

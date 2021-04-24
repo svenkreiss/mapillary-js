@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Vector3, WebGLRenderer } from "three";
 
 import {
     combineLatest as observableCombineLatest,
@@ -57,7 +57,7 @@ interface ImageGLRendererOperation {
     (renderer: ImageGLRenderer): ImageGLRenderer;
 }
 
-type PositionLookat = [THREE.Vector3, THREE.Vector3, number, number, number];
+type PositionLookat = [Vector3, Vector3, number, number, number];
 
 export class ImageComponent extends Component<ComponentConfiguration> {
     public static componentName: ComponentName = "image";
@@ -167,7 +167,8 @@ export class ImageComponent extends Component<ComponentConfiguration> {
                     this._container.glRenderer.webGLRenderer$,
                     this._container.renderService.size$),
                 map(
-                    ([frame, renderer, size]: [AnimationFrame, THREE.WebGLRenderer, ViewportSize]): TextureProvider => {
+                    ([frame, renderer, size]:
+                        [AnimationFrame, WebGLRenderer, ViewportSize]): TextureProvider => {
                         let state = frame.state;
                         let currentNode = state.currentImage;
                         let currentTransform = state.currentTransform;
@@ -419,9 +420,9 @@ export class ImageComponent extends Component<ComponentConfiguration> {
                             [ImageNode, Transform, number][],
                         ]): Observable<ImageNode> => {
 
-                        const direction: THREE.Vector3 = camera.camera.lookat.clone().sub(camera.camera.position);
+                        const direction: Vector3 = camera.camera.lookat.clone().sub(camera.camera.position);
 
-                        const cd: THREE.Vector3 = new Spatial().viewingDirection(cn.rotation);
+                        const cd: Vector3 = new Spatial().viewingDirection(cn.rotation);
                         const ca: number = cd.angleTo(direction);
                         const closest: [number, string] = [ca, undefined];
                         const basic: number[] = new ViewportCoords().viewportToBasic(0, 0, ct, camera.perspective);
@@ -431,7 +432,7 @@ export class ImageComponent extends Component<ComponentConfiguration> {
                         }
 
                         for (const [n] of nts) {
-                            const d: THREE.Vector3 = new Spatial().viewingDirection(n.rotation);
+                            const d: Vector3 = new Spatial().viewingDirection(n.rotation);
                             const a: number = d.angleTo(direction);
 
                             if (a < closest[0]) {

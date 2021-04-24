@@ -1,4 +1,4 @@
-import * as THREE from "three";
+import { Euler, Matrix4, Vector4 } from "three";
 
 import { LngLat } from "../api/interfaces/LngLat";
 import { enuToGeodetic } from "../geo/GeoCoords";
@@ -83,17 +83,17 @@ export class GraphCalculator {
                 break;
         }
 
-        const rz = new THREE.Matrix4()
+        const rz = new Matrix4()
             .makeRotationZ(z);
-        const euler = new THREE.Euler(
+        const euler = new Euler(
             x,
             y,
             compassAngle * Math.PI / 180,
             "XYZ");
-        const re = new THREE.Matrix4()
+        const re = new Matrix4()
             .makeRotationFromEuler(euler);
 
-        const rotation = new THREE.Vector4()
+        const rotation = new Vector4()
             .setAxisAngleFromRotationMatrix(
                 re.multiply(rz));
 
