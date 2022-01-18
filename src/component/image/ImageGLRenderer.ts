@@ -41,6 +41,14 @@ export class ImageGLRenderer {
         this._needsRender = false;
     }
 
+    public y_up() {
+        this._scene.y_up();
+    }
+
+    public z_up() {
+        this._scene.z_up();
+    }
+
     public get frameId(): number {
         return this._frameId;
     }

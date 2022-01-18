@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { VRButton } from 'three/examples/jsm/webxr/VRButton.js';
 
 import {
     combineLatest as observableCombineLatest,
@@ -107,6 +108,9 @@ export class GLRenderer {
 
     private _opaqueRender$: Subject<void> = new Subject<void>();
 
+    private co: GLRendererCombination = null;
+    private xrWasPresenting = false;
+
     constructor(
         canvas: HTMLCanvasElement,
         canvasContainer: HTMLElement,
@@ -207,45 +211,10 @@ export class GLRenderer {
                         return co.eraser.needsRender ||
                             co.trigger.needsRender ? -co.camera.frameId : co.camera.frameId;
                     }))
-            .subscribe(
-                (co: GLRendererCombination): void => {
-                    co.renderer.needsRender = false;
-                    co.camera.needsRender = false;
-                    co.eraser.needsRender = false;
-                    co.trigger.needsRender = false;
-
-                    const perspectiveCamera = co.camera.perspective;
-
-                    const backgroundRenders: GLRenderFunction[] = [];
-                    const opaqueRenders: GLRenderFunction[] = [];
-
-                    for (const render of co.renders) {
-                        if (render.pass === RenderPass.Background) {
-                            backgroundRenders.push(render.render);
-                        } else if (render.pass === RenderPass.Opaque) {
-                            opaqueRenders.push(render.render);
-                        }
-                    }
-
-                    const renderer = co.renderer.renderer;
-                    renderer.resetState();
-                    renderer.setClearColor(clearColor, 1.0);
-                    renderer.clear();
-
-                    for (const renderBackground of backgroundRenders) {
-                        renderBackground(perspectiveCamera, renderer);
-                    }
-
-                    renderer.clearDepth();
-
-                    for (const renderOpaque of opaqueRenders) {
-                        renderOpaque(perspectiveCamera, renderer);
-                    }
-
-                    renderer.resetState();
-
-                    this._opaqueRender$.next();
-                });
+            .subscribe((co: GLRendererCombination): void => {
+                this.co = co;
+                this.renderNow();
+            });
 
         subs.push(renderSubscription);
         subs.push(this._renderFrame$.pipe(
@@ -299,6 +268,14 @@ export class GLRenderer {
                     webGLRenderer.setPixelRatio(window.devicePixelRatio);
                     webGLRenderer.setSize(element.offsetWidth, element.offsetHeight);
                     webGLRenderer.autoClear = false;
+
+                    // WebVR
+                    THREE.Object3D.DefaultUp = new THREE.Vector3(0, 1, 0);
+                    console.log("add vr button");
+                    canvasContainer.appendChild( VRButton.createButton( webGLRenderer ) );
+                    console.log("enable xr");
+                    webGLRenderer.xr.enabled = true;
+                    webGLRenderer.setAnimationLoop(this.renderNow);
 
                     return webGLRenderer;
                 }),
@@ -385,6 +362,58 @@ export class GLRenderer {
                     };
                 }))
             .subscribe(this._eraserOperation$));
+    }
+
+    renderNow = (): void => {
+        const co = this.co;
+        co.renderer.needsRender = false;
+        co.camera.needsRender = false;
+        co.eraser.needsRender = false;
+        co.trigger.needsRender = false;
+
+        const renderer = co.renderer.renderer;
+        const perspectiveCamera = co.camera.perspective;
+
+        const backgroundRenders: GLRenderFunction[] = [];
+        const opaqueRenders: GLRenderFunction[] = [];
+
+        for (const render of co.renders) {
+            if (this.xrWasPresenting != renderer.xr.isPresenting) {
+                // change coordinate system
+                if (renderer.xr.isPresenting) {
+                    render.y_up();
+                } else {
+                    render.z_up();
+                }
+            }
+
+            if (render.pass === RenderPass.Background) {
+                backgroundRenders.push(render.render);
+            } else if (render.pass === RenderPass.Opaque) {
+                opaqueRenders.push(render.render);
+            }
+        }
+        this.xrWasPresenting = renderer.xr.isPresenting;
+
+        // renderer.resetState();
+        renderer.setClearColor(new THREE.Color(0x0F0F0F), 1.0);
+        renderer.clear();
+
+        // console.log("renderBackground");
+        for (const renderBackground of backgroundRenders) {
+            renderBackground(perspectiveCamera, renderer);
+        }
+
+        renderer.clearDepth();
+
+        // console.log("renderOpaque");
+        for (const renderOpaque of opaqueRenders) {
+            renderOpaque(perspectiveCamera, renderer);
+        }
+
+        // renderer.resetState();
+
+        this._opaqueRender$.next();
     }
 
     public get render$(): Subject<GLRenderHash> {

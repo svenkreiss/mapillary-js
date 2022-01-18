@@ -508,6 +508,8 @@ export class SpatialComponent extends Component<SpatialConfiguration> {
                             needsRender: scene.needsRender,
                             render: scene.render.bind(scene),
                             pass: RenderPass.Opaque,
+                            y_up: scene.y_up.bind(scene),
+                            z_up: scene.z_up.bind(scene),
                         },
                     };
                 }))

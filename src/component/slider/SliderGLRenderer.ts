@@ -52,6 +52,14 @@ export class SliderGLRenderer {
         this._previousProviderDisposers = {};
     }
 
+    public y_up() {
+        this._scene.y_up();
+    }
+
+    public z_up() {
+        this._scene.z_up();
+    }
+
     public get disabled(): boolean {
         return this._disabled;
     }

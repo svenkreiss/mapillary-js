@@ -146,6 +146,8 @@ export class ImageComponent extends Component<ComponentConfiguration> {
                             needsRender: renderer.needsRender,
                             render: renderer.render.bind(renderer),
                             pass: RenderPass.Background,
+                            y_up: renderer.y_up.bind(renderer),
+                            z_up: renderer.z_up.bind(renderer),
                         },
                     };
 
