@@ -52,14 +52,6 @@ export class SliderGLRenderer {
         this._previousProviderDisposers = {};
     }
 
-    public y_up() {
-        this._scene.y_up();
-    }
-
-    public z_up() {
-        this._scene.z_up();
-    }
-
     public get disabled(): boolean {
         return this._disabled;
     }
@@ -165,13 +157,16 @@ export class SliderGLRenderer {
 
     public render(
         perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer): void {
+        renderer: THREE.WebGLRenderer,
+        rootScene: THREE.Scene): void {
+        this._scene.ensureRootScene(rootScene);
 
         if (!this.disabled) {
-            renderer.render(this._scene.sceneOld, perspectiveCamera);
+            // renderer.render(this._scene.sceneOld, perspectiveCamera);
+            // renderer.render(rootScene, perspectiveCamera);
         }
 
-        renderer.render(this._scene.scene, perspectiveCamera);
+        renderer.render(rootScene, perspectiveCamera);
 
         this._needsRender = false;
     }

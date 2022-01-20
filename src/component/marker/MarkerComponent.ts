@@ -562,8 +562,6 @@ export class MarkerComponent extends Component<MarkerConfiguration> {
                                 needsRender: scene.needsRender,
                                 render: scene.render.bind(scene),
                                 pass: RenderPass.Opaque,
-                                y_up: scene.y_up,
-                                z_up: scene.z_up,
                             },
                         };
                     }))

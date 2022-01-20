@@ -41,14 +41,6 @@ export class ImageGLRenderer {
         this._needsRender = false;
     }
 
-    public y_up() {
-        this._scene.y_up();
-    }
-
-    public z_up() {
-        this._scene.z_up();
-    }
-
     public get frameId(): number {
         return this._frameId;
     }
@@ -146,7 +138,9 @@ export class ImageGLRenderer {
 
     public render(
         perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.WebGLRenderer): void {
+        renderer: THREE.WebGLRenderer,
+        rootScene: THREE.Scene): void {
+        this._scene.ensureRootScene(rootScene);
 
         const planes: { [key: string]: THREE.Mesh } = this._scene.planes;
         const planesOld: { [key: string]: THREE.Mesh } = this._scene.planesOld;
@@ -182,20 +176,22 @@ export class ImageGLRenderer {
             (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = peripheryAlpha;
         }
 
-        renderer.render(this._scene.scenePeriphery, perspectiveCamera);
-        renderer.render(this._scene.scene, perspectiveCamera);
-        renderer.render(this._scene.sceneOld, perspectiveCamera);
+        // // renderer.render(this._scene.scenePeriphery, perspectiveCamera);
+        // // renderer.render(this._scene.scene, perspectiveCamera);
+        // // renderer.render(this._scene.sceneOld, perspectiveCamera);
+        // console.log({renderer, source: renderer.render});
+        renderer.render(rootScene, perspectiveCamera);
 
-        for (const key in planes) {
-            if (!planes.hasOwnProperty(key)) {
-                continue;
-            }
+        // for (const key in planes) {
+        //     if (!planes.hasOwnProperty(key)) {
+        //         continue;
+        //     }
 
-            const plane: THREE.Mesh = planes[key];
-            (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = this._alpha;
-        }
+        //     const plane: THREE.Mesh = planes[key];
+        //     (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = this._alpha;
+        // }
 
-        renderer.render(this._scene.scene, perspectiveCamera);
+        // renderer.render(rootScene, perspectiveCamera);
     }
 
     public clearNeedsRender(): void {

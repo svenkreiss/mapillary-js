@@ -12,6 +12,7 @@ import { SubscriptionHolder } from "../util/SubscriptionHolder";
 import { LngLatAlt } from "../api/interfaces/LngLatAlt";
 import { WebGLRenderer } from "three";
 import { RenderCamera } from "../render/RenderCamera";
+import { xrCamera } from "../render/GLRenderer";
 import { IViewer } from "./interfaces/IViewer";
 
 export class CustomRenderer {
@@ -54,7 +55,7 @@ export class CustomRenderer {
                     [void, RenderCamera, WebGLRenderer]): void => {
                     const context = glRenderer.getContext();
                     const viewMatrix =
-                        renderCamera.perspective.matrixWorldInverse;
+                        xrCamera.matrixWorldInverse.multiply(renderCamera.perspective.matrixWorldInverse);
                     const projectionMatrix =
                         renderCamera.perspective.projectionMatrix;
 

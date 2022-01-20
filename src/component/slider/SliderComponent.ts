@@ -184,8 +184,6 @@ export class SliderComponent extends Component<SliderConfiguration> {
                             needsRender: glRenderer.needsRender,
                             render: glRenderer.render.bind(glRenderer),
                             pass: RenderPass.Background,
-                            y_up: glRenderer.y_up.bind(glRenderer),
-                            z_up: glRenderer.z_up.bind(glRenderer),
                         },
                     };
 

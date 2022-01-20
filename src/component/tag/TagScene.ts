@@ -36,16 +36,6 @@ export class TagScene {
         this._tags = {};
     }
 
-    public y_up() {
-        this.z_up();
-        this._scene.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), -1.6);
-        this._scene.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 3.141);
-    }
-
-    public z_up() {
-        this._scene.rotation.setFromVector3(new THREE.Vector3(0, 0, 0));
-    }
-
     public get needsRender(): boolean {
         return this._needsRender;
     }

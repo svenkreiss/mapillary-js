@@ -6,6 +6,4 @@ export interface GLFrameRenderer {
     needsRender: boolean;
     render: GLRenderFunction;
     pass: RenderPass;
-    y_up: () => void;
-    z_up: () => void;
 }

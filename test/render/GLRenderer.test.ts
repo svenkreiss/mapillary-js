@@ -90,8 +90,6 @@ describe("GLRenderer.renderer", () => {
                 needsRender: needsRender,
                 render: renderFunction,
                 pass: RenderPass.Background,
-                y_up: () => {},
-                z_up: () => {},
             };
 
             let renderHash = {

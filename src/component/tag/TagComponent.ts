@@ -857,8 +857,6 @@ export class TagComponent extends Component<TagConfiguration> {
                             needsRender: tagScene.needsRender,
                             render: tagScene.render.bind(tagScene),
                             pass: RenderPass.Opaque,
-                            y_up: tagScene.y_up.bind(tagScene),
-                            z_up: tagScene.z_up.bind(tagScene),
                         },
                     };
                 }))

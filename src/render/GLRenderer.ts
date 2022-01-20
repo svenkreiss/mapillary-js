@@ -76,6 +76,17 @@ interface GLRendererCombination {
     renders: GLFrameRenderer[];
 }
 
+
+export const xrCamera = new THREE.PerspectiveCamera();
+function patchWebGLRenderer(r: THREE.WebGLRenderer) {
+    const _render = r.render.bind(r);
+    r.render = function(scene: THREE.Scene, camera: THREE.PerspectiveCamera) {
+        xrCamera.copy(camera, true);
+        _render(scene, xrCamera);
+    };
+}
+
+
 export class GLRenderer {
     private _renderService: RenderService;
 
@@ -110,6 +121,7 @@ export class GLRenderer {
 
     private co: GLRendererCombination = null;
     private xrWasPresenting = false;
+    public rootScene = new THREE.Scene();
 
     constructor(
         canvas: HTMLCanvasElement,
@@ -265,17 +277,20 @@ export class GLRenderer {
                     canvasContainer.appendChild(canvas);
                     const element = renderService.element;
                     const webGLRenderer = new THREE.WebGLRenderer({ canvas: canvas });
+                    patchWebGLRenderer(webGLRenderer);
                     webGLRenderer.setPixelRatio(window.devicePixelRatio);
                     webGLRenderer.setSize(element.offsetWidth, element.offsetHeight);
                     webGLRenderer.autoClear = false;
 
                     // WebVR
-                    THREE.Object3D.DefaultUp = new THREE.Vector3(0, 1, 0);
+                    console.warn("webxr experiment v0.0.6");
                     console.log("add vr button");
                     canvasContainer.appendChild( VRButton.createButton( webGLRenderer ) );
                     console.log("enable xr");
                     webGLRenderer.xr.enabled = true;
-                    webGLRenderer.setAnimationLoop(this.renderNow);
+                    webGLRenderer.setAnimationLoop(() => {
+                        this.renderNow(false);
+                    });
 
                     return webGLRenderer;
                 }),
@@ -364,7 +379,7 @@ export class GLRenderer {
             .subscribe(this._eraserOperation$));
     }
 
-    renderNow = (): void => {
+    renderNow = (resetState: boolean = true): void => {
         const co = this.co;
         co.renderer.needsRender = false;
         co.camera.needsRender = false;
@@ -377,16 +392,34 @@ export class GLRenderer {
         const backgroundRenders: GLRenderFunction[] = [];
         const opaqueRenders: GLRenderFunction[] = [];
 
-        for (const render of co.renders) {
-            if (this.xrWasPresenting != renderer.xr.isPresenting) {
-                // change coordinate system
-                if (renderer.xr.isPresenting) {
-                    render.y_up();
-                } else {
-                    render.z_up();
-                }
-            }
+        if (this.xrWasPresenting != renderer.xr.isPresenting) {
+            // change coordinate system
+            if (renderer.xr.isPresenting) {
+                console.log(perspectiveCamera);
+                // this.rootScene.translateX(-perspectiveCamera.position.x);
+                // this.rootScene.translateY(-perspectiveCamera.position.y);
+                // this.rootScene.translateZ(-perspectiveCamera.position.z + 1.6);
+                this.rootScene.matrixAutoUpdate = false;
+                this.rootScene.matrix.fromArray(perspectiveCamera.matrixWorldInverse.toArray());
+                this.rootScene.matrixWorldNeedsUpdate = true;
 
+                // this.rootScene.rotation.setFromVector3(new THREE.Vector3(0, 0, 0));
+                // this.rootScene.matrixAutoUpdate = false;
+                // console.log(this.rootScene);
+                // this.rootScene.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), -1.6);
+                // this.rootScene.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 3.141);
+
+                // const quaternion = new THREE.Quaternion();
+                // quaternion.setFromEuler(perspectiveCamera.rotation);
+                // this.rootScene.setRotationFromQuaternion(quaternion.conjugate());
+            } else {
+                this.rootScene.rotation.setFromVector3(new THREE.Vector3(0, 0, 0));
+                this.rootScene.position.set(0, 0, 0);
+                this.rootScene.updateMatrix();
+            }
+        }
+
+        for (const render of co.renders) {
             if (render.pass === RenderPass.Background) {
                 backgroundRenders.push(render.render);
             } else if (render.pass === RenderPass.Opaque) {
@@ -395,23 +428,21 @@ export class GLRenderer {
         }
         this.xrWasPresenting = renderer.xr.isPresenting;
 
-        // renderer.resetState();
+        if (resetState) renderer.resetState();
         renderer.setClearColor(new THREE.Color(0x0F0F0F), 1.0);
         renderer.clear();
 
-        // console.log("renderBackground");
         for (const renderBackground of backgroundRenders) {
-            renderBackground(perspectiveCamera, renderer);
+            renderBackground(perspectiveCamera, renderer, this.rootScene);
         }
 
         renderer.clearDepth();
 
-        // console.log("renderOpaque");
         for (const renderOpaque of opaqueRenders) {
-            renderOpaque(perspectiveCamera, renderer);
+            renderOpaque(perspectiveCamera, renderer, this.rootScene);
         }
 
-        // renderer.resetState();
+        if (resetState) renderer.resetState();
 
         this._opaqueRender$.next();
     }
