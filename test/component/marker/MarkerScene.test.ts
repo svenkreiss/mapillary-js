@@ -79,7 +79,7 @@ describe("MarkerScene.render", () => {
         let camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
         let renderer: THREE.WebGLRenderer = <THREE.WebGLRenderer>new RendererMock();
         let renderSpy: jasmine.Spy = spyOn(renderer, "render").and.stub();
-        markerScene.render(camera, renderer);
+        markerScene.render(camera, renderer, new THREE.Scene());
 
         expect(markerScene.needsRender).toBe(false);
 
@@ -105,7 +105,7 @@ describe("MarkerScene.clear", () => {
         let camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
         let renderer: THREE.WebGLRenderer = <THREE.WebGLRenderer>new RendererMock();
         spyOn(renderer, "render").and.stub();
-        markerScene.render(camera, renderer);
+        markerScene.render(camera, renderer, new THREE.Scene());
 
         markerScene.clear();
 
@@ -135,7 +135,7 @@ describe("MarkerScene.remove", () => {
         let camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera();
         let renderer: THREE.WebGLRenderer = <THREE.WebGLRenderer>new RendererMock();
         spyOn(renderer, "render").and.stub();
-        markerScene.render(camera, renderer);
+        markerScene.render(camera, renderer, new THREE.Scene());
 
         markerScene.remove(marker.id);
 
