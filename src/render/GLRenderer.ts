@@ -77,6 +77,10 @@ interface GLRendererCombination {
 }
 
 
+// For WebXr experiment, the camera is taken over by the renderer.
+// This function patches the THREE.WebGLRenderer function to
+// preserve MJS's camera and use the new xrCamera instead for the
+// render.
 export const xrCamera = new THREE.PerspectiveCamera();
 function patchWebGLRenderer(r: THREE.WebGLRenderer) {
     const _render = r.render.bind(r);
@@ -396,24 +400,11 @@ export class GLRenderer {
             // change coordinate system
             if (renderer.xr.isPresenting) {
                 console.log(perspectiveCamera);
-                // this.rootScene.translateX(-perspectiveCamera.position.x);
-                // this.rootScene.translateY(-perspectiveCamera.position.y);
-                // this.rootScene.translateZ(-perspectiveCamera.position.z + 1.6);
                 this.rootScene.matrixAutoUpdate = false;
                 this.rootScene.matrix.fromArray(perspectiveCamera.matrixWorldInverse.toArray());
                 this.rootScene.matrixWorldNeedsUpdate = true;
-
-                // this.rootScene.rotation.setFromVector3(new THREE.Vector3(0, 0, 0));
-                // this.rootScene.matrixAutoUpdate = false;
-                // console.log(this.rootScene);
-                // this.rootScene.rotateOnWorldAxis(new THREE.Vector3(1, 0, 0), -1.6);
-                // this.rootScene.rotateOnWorldAxis(new THREE.Vector3(0, 1, 0), 3.141);
-
-                // const quaternion = new THREE.Quaternion();
-                // quaternion.setFromEuler(perspectiveCamera.rotation);
-                // this.rootScene.setRotationFromQuaternion(quaternion.conjugate());
             } else {
-                this.rootScene.rotation.setFromVector3(new THREE.Vector3(0, 0, 0));
+                this.rootScene.rotation.set(0, 0, 0);
                 this.rootScene.position.set(0, 0, 0);
                 this.rootScene.updateMatrix();
             }

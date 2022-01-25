@@ -163,7 +163,6 @@ export class SliderGLRenderer {
 
         if (!this.disabled) {
             // renderer.render(this._scene.sceneOld, perspectiveCamera);
-            // renderer.render(rootScene, perspectiveCamera);
         }
 
         renderer.render(rootScene, perspectiveCamera);

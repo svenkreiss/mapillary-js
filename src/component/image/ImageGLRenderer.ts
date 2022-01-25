@@ -176,22 +176,20 @@ export class ImageGLRenderer {
             (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = peripheryAlpha;
         }
 
-        // // renderer.render(this._scene.scenePeriphery, perspectiveCamera);
-        // // renderer.render(this._scene.scene, perspectiveCamera);
-        // // renderer.render(this._scene.sceneOld, perspectiveCamera);
-        // console.log({renderer, source: renderer.render});
+        // renderer.render(this._scene.scenePeriphery, perspectiveCamera);
+        // renderer.render(this._scene.scene, perspectiveCamera);
+        // renderer.render(this._scene.sceneOld, perspectiveCamera);
+
+        for (const key in planes) {
+            if (!planes.hasOwnProperty(key)) {
+                continue;
+            }
+
+            const plane: THREE.Mesh = planes[key];
+            (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = this._alpha;
+        }
+
         renderer.render(rootScene, perspectiveCamera);
-
-        // for (const key in planes) {
-        //     if (!planes.hasOwnProperty(key)) {
-        //         continue;
-        //     }
-
-        //     const plane: THREE.Mesh = planes[key];
-        //     (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = this._alpha;
-        // }
-
-        // renderer.render(rootScene, perspectiveCamera);
     }
 
     public clearNeedsRender(): void {
