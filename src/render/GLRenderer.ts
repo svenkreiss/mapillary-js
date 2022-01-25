@@ -401,7 +401,11 @@ export class GLRenderer {
             if (renderer.xr.isPresenting) {
                 console.log(perspectiveCamera);
                 this.rootScene.matrixAutoUpdate = false;
+                perspectiveCamera.translateY(-1.6);
+                perspectiveCamera.updateMatrix();
+                perspectiveCamera.updateMatrixWorld();
                 this.rootScene.matrix.fromArray(perspectiveCamera.matrixWorldInverse.toArray());
+                perspectiveCamera.translateY(1.6);
                 this.rootScene.matrixWorldNeedsUpdate = true;
             } else {
                 this.rootScene.rotation.set(0, 0, 0);
