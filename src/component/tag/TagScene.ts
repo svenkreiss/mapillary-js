@@ -129,9 +129,10 @@ export class TagScene {
 
     public render(
         perspectiveCamera: THREE.PerspectiveCamera,
-        renderer: THREE.Renderer): void {
-
-        renderer.render(this._scene, perspectiveCamera);
+        renderer: THREE.Renderer,
+        rootScene: THREE.Scene): void {
+        if (!this._scene.parent) rootScene.add(this._scene);
+        renderer.render(rootScene, perspectiveCamera);
 
         this._needsRender = false;
     }
