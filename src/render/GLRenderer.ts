@@ -396,22 +396,25 @@ export class GLRenderer {
         const backgroundRenders: GLRenderFunction[] = [];
         const opaqueRenders: GLRenderFunction[] = [];
 
+        // change coordinate system
+        if (renderer.xr.isPresenting) {
+            perspectiveCamera.translateY(-1.6);
+            perspectiveCamera.updateMatrix();
+            perspectiveCamera.updateMatrixWorld();
+            this.rootScene.matrixAutoUpdate = false;
+            this.rootScene.matrix.fromArray(perspectiveCamera.matrixWorldInverse.toArray());
+            this.rootScene.matrixWorldNeedsUpdate = true;
+            perspectiveCamera.translateY(1.6);
+            perspectiveCamera.updateMatrix();
+            perspectiveCamera.matrixWorldNeedsUpdate = true;
+        }
+        if (this.xrWasPresenting && !renderer.xr.isPresenting) {
+            this.rootScene.rotation.set(0, 0, 0);
+            this.rootScene.position.set(0, 0, 0);
+            this.rootScene.updateMatrix();
+        }
         if (this.xrWasPresenting != renderer.xr.isPresenting) {
-            // change coordinate system
-            if (renderer.xr.isPresenting) {
-                console.log(perspectiveCamera);
-                this.rootScene.matrixAutoUpdate = false;
-                perspectiveCamera.translateY(-1.6);
-                perspectiveCamera.updateMatrix();
-                perspectiveCamera.updateMatrixWorld();
-                this.rootScene.matrix.fromArray(perspectiveCamera.matrixWorldInverse.toArray());
-                perspectiveCamera.translateY(1.6);
-                this.rootScene.matrixWorldNeedsUpdate = true;
-            } else {
-                this.rootScene.rotation.set(0, 0, 0);
-                this.rootScene.position.set(0, 0, 0);
-                this.rootScene.updateMatrix();
-            }
+            console.log({perspectiveCamera, xrCamera, rootScene: this.rootScene});
         }
 
         for (const render of co.renders) {
