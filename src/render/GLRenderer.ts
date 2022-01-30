@@ -443,6 +443,11 @@ export class GLRenderer {
         if (resetState) renderer.resetState();
 
         this._opaqueRender$.next();
+
+        // For WebXR, some renderers above dont render anymore but
+        // add objects to the rootScene instead so that they can all
+        // be rendered in a single pass now:
+        renderer.render(this.rootScene, perspectiveCamera);
     }
 
     public get render$(): Subject<GLRenderHash> {

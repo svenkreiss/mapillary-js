@@ -440,7 +440,6 @@ export class SpatialScene {
         renderer: WebGLRenderer,
         rootScene: Scene): void {
         if (!this._scene.parent) rootScene.add(this._scene);
-        renderer.render(rootScene, camera);
         this._needsRender = false;
     }
 

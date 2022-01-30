@@ -188,8 +188,6 @@ export class ImageGLRenderer {
             const plane: THREE.Mesh = planes[key];
             (<ProjectorShaderMaterial>plane.material).uniforms.opacity.value = this._alpha;
         }
-
-        renderer.render(rootScene, perspectiveCamera);
     }
 
     public clearNeedsRender(): void {

@@ -107,7 +107,6 @@ export class MarkerScene {
         renderer: THREE.WebGLRenderer,
         rootScene: THREE.Scene): void {
         if (!this._scene.parent) rootScene.add(this._scene);
-        renderer.render(rootScene, perspectiveCamera);
 
         this._needsRender = false;
     }

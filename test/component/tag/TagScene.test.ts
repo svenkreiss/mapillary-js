@@ -211,24 +211,24 @@ describe("TagScene.needsRender", () => {
         tagScene.add([renderTag]);
         expect(tagScene.needsRender).toBe(true);
 
-        tagScene.render(new THREE.PerspectiveCamera(), renderer);
+        tagScene.render(new THREE.PerspectiveCamera(), renderer, new THREE.Scene());
         expect(tagScene.needsRender).toBe(false);
 
         tagScene.remove([renderTag.tag.id]);
         expect(tagScene.needsRender).toBe(true);
 
         tagScene.add([renderTag]);
-        tagScene.render(new THREE.PerspectiveCamera(), renderer);
+        tagScene.render(new THREE.PerspectiveCamera(), renderer, new THREE.Scene());
         tagScene.removeAll();
         expect(tagScene.needsRender).toBe(true);
 
-        tagScene.render(new THREE.PerspectiveCamera(), renderer);
+        tagScene.render(new THREE.PerspectiveCamera(), renderer, new THREE.Scene());
         tagScene.update();
 
         expect(tagScene.needsRender).toBe(true);
 
         tagScene.add([renderTag]);
-        tagScene.render(new THREE.PerspectiveCamera(), renderer);
+        tagScene.render(new THREE.PerspectiveCamera(), renderer, new THREE.Scene());
         tagScene.updateObjects(renderTag);
 
         expect(tagScene.needsRender).toBe(true);
