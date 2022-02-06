@@ -20,7 +20,7 @@ export class CustomRenderer {
         [id: string]: {
             renderer: ICustomRenderer,
             subs: SubscriptionHolder,
-        }
+        };
     };
 
     constructor(
@@ -42,7 +42,7 @@ export class CustomRenderer {
             .subscribe(
                 ([gl, reference]:
                     [WebGLRenderer, LngLatAlt]): void => {
-                    renderer.onAdd(viewer, reference, gl.getContext());
+                    renderer.onAdd(viewer, reference, gl.getContext(), this._container.glRenderer.rootScene);
                 }));
 
         subs.push(this._container.glRenderer.opaqueRender$

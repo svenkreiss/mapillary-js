@@ -1,3 +1,4 @@
+import { Scene } from "three";
 import { LngLatAlt } from "../../api/interfaces/LngLatAlt";
 import { RenderPass } from "../enums/RenderPass";
 import { IViewer } from "./IViewer";
@@ -64,7 +65,8 @@ export interface ICustomRenderer {
     onAdd(
         viewer: IViewer,
         reference: LngLatAlt,
-        context: WebGLRenderingContext | WebGL2RenderingContext): void;
+        context: WebGLRenderingContext | WebGL2RenderingContext,
+        rootScene?: Scene): void;
 
     /**
      * Method called when the viewer's reference position has changed.

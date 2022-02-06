@@ -68,7 +68,7 @@ export class RotatingCubeRenderer {
     this.cube = cube;
   }
 
-  onAdd(viewer, reference, context) {
+  onAdd(viewer, reference, context, rootScene) {
     this.viewer = viewer;
 
     const position = geoToPosition(this.cube.geoPosition, reference);
@@ -86,6 +86,8 @@ export class RotatingCubeRenderer {
 
     this.scene = new Scene();
     this.scene.add(this.cube.mesh);
+    rootScene.add(this.scene);
+    this.rootScene = rootScene;
   }
 
   onReference(viewer, reference) {
@@ -100,7 +102,7 @@ export class RotatingCubeRenderer {
   }
 
   render(context, viewMatrix, projectionMatrix) {
-    const {camera, clock, scene, cube, renderer, viewer} = this;
+    const {camera, clock, scene, cube, renderer, rootScene, viewer} = this;
 
     const delta = clock.getDelta();
     const {rotationSpeed} = cube;
@@ -111,10 +113,10 @@ export class RotatingCubeRenderer {
     camera.updateMatrixWorld(true);
     camera.projectionMatrix.fromArray(projectionMatrix);
 
-    renderer.resetState();
-    renderer.render(scene, camera);
+    // renderer.resetState();
+    renderer.render(rootScene, camera);
 
-    viewer.triggerRerender();
+    // viewer.triggerRerender();
   }
 }
 
