@@ -109,12 +109,12 @@ export class RotatingCubeRenderer {
     cube.mesh.rotateZ(rotationSpeed * delta);
     cube.mesh.rotateY(0.7 * rotationSpeed * delta);
 
-    camera.matrix.fromArray(viewMatrix).invert();
-    camera.updateMatrixWorld(true);
-    camera.projectionMatrix.fromArray(projectionMatrix);
+    // camera.matrix.fromArray(viewMatrix).invert();
+    // camera.updateMatrixWorld(true);
+    // camera.projectionMatrix.fromArray(projectionMatrix);
 
     // renderer.resetState();
-    renderer.render(rootScene, camera);
+    // renderer.render(rootScene, camera);
 
     // viewer.triggerRerender();
   }
