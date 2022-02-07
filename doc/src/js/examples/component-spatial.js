@@ -30,7 +30,7 @@ let viewer;
 
 export function init(opts) {
   const {accessToken, container} = opts;
-  const imageId = '298096478644828';
+  const imageId = '1440740932944996';   // iguacu: '531834647813553', city: '1440740932944996'
 
   const componentOptions = {
     cover: false,

@@ -229,7 +229,7 @@ export class GLRenderer {
                     }))
             .subscribe((co: GLRendererCombination): void => {
                 this.co = co;
-                this.renderNow();
+                // this.renderNow();
             });
 
         subs.push(renderSubscription);
